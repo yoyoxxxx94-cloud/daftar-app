@@ -1,0 +1,53 @@
+plugins {
+    id 'com.android.application'
+}
+
+// رقم الإصدار يأتي من GitHub Actions (github.run_number) ويزداد تلقائيًا مع كل بناء.
+// عند البناء المحلي بدون المعامل يكون 1.
+def vCode = (project.findProperty('appVersionCode') ?: '1').toString().toInteger()
+
+android {
+    namespace 'com.yahya.daftar'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId 'com.yahya.daftar'      // لا تغيّره أبدًا، وإلا لن يثبت التحديث فوق القديم
+        minSdk 24
+        targetSdk 34
+        versionCode vCode
+        versionName "1.0." + vCode
+    }
+
+    signingConfigs {
+        debug {
+            storeFile file('debug.keystore')  // مفتاح ثابت داخل المستودع
+            storePassword 'android'
+            keyAlias 'androiddebugkey'
+            keyPassword 'android'
+        }
+    }
+
+    buildTypes {
+        debug {
+            signingConfig signingConfigs.debug
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    lint {
+        abortOnError false
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
+
+dependencies {
+    implementation 'androidx.webkit:webkit:1.11.0'
+    implementation 'androidx.core:core:1.13.1'
+}
