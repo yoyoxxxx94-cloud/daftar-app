@@ -1763,7 +1763,27 @@ setTimeout(loadVoices,700);
 function vLabel(k){return k==='go'?'وقت التحرك':(k[0]==='s'?'بداية':'نهاية')+' الحصة '+(ORD[+k.slice(1)-1]||k.slice(1));}
 function voiceKeys(){let n=7;try{n=Math.max.apply(null,S.sched.days.map(d=>dayCount(S.sched,d)));}catch(e){}n=Math.max(1,Math.min(n||7,12));const k=['go'];for(let p=1;p<=n;p++)k.push('s'+p);for(let p=1;p<=n;p++)k.push('e'+p);return k;}
 const FX=[['raw','كما سجّلت'],['clean','صافٍ'],['radio','إذاعي'],['deep','عميق'],['hall','فخم بصدى'],['high','رفيع'],['calm','هادئ']];
+async function startRecNative(){
+  const r=Android.recStart();
+  if(r!=='ok')throw new Error('native:'+r);
+  return {async stop(){
+    const b64=Android.recStop();
+    if(!b64)throw new Error('empty');
+    const bin=atob(b64),u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);
+    const Ctx=window.AudioContext||window.webkitAudioContext,c=new Ctx();
+    const ab=await new Promise((res,rej)=>c.decodeAudioData(u.buffer,res,rej));
+    const d=ab.getChannelData(0).slice(),rate=ab.sampleRate;try{c.close();}catch(e){}
+    return {data:d,rate};
+  }};
+}
 async function startRec(){
+  try{return await startRecWeb();}
+  catch(e){
+    if(window.Android&&Android.recStart){return await startRecNative();}
+    throw e;
+  }
+}
+async function startRecWeb(){
   const stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:true,autoGainControl:true}});
   const Ctx=window.AudioContext||window.webkitAudioContext,ctx=new Ctx(),src=ctx.createMediaStreamSource(stream),pr=ctx.createScriptProcessor(4096,1,1),mute=ctx.createGain(),chunks=[];
   mute.gain.value=0;pr.onaudioprocess=e=>chunks.push(new Float32Array(e.inputBuffer.getChannelData(0)));
@@ -1812,7 +1832,7 @@ function recSheet(k){
   const el=openSheet('<h2>'+esc(vLabel(k))+'</h2><p class="mut" id="rs">اضغط «ابدأ» ثم تكلّم بصوتك (حتى ٦ ثوانٍ). مثال: «'+esc(vLabel(k))+'».</p><div class="acts"><button class="btn full" id="rb">ابدأ التسجيل</button></div><div id="fxa" style="display:none"><p class="mut">اختر نمط الصوت (اضغط لتسمعه):</p><div id="fxc" style="display:flex;flex-wrap:wrap;gap:8px">'+FX.map(([id,n])=>'<button class="btn sec sm" data-fx="'+id+'">'+n+'</button>').join('')+'</div><div class="acts"><button class="btn full" id="sv" disabled>حفظ هذا الصوت</button><button class="btn ghost" id="rd">إعادة التسجيل</button></div></div><div class="acts"><button class="btn ghost full" id="no">إلغاء</button></div>',{onClose:()=>{try{rec&&rec.stop();}catch(e){}}});
   let rec=null,got=null,wav=null,timer=null;
   const rs=$('#rs',el),rb=$('#rb',el);
-  const stop=()=>{clearTimeout(timer);if(!rec)return;got=rec.stop();rec=null;rb.textContent='ابدأ التسجيل';rb.style.display='none';$('#fxa',el).style.display='block';rs.textContent='تم التسجيل. اختر نمطًا واسمعه ثم احفظ.';pick('clean');};
+  const stop=async()=>{clearTimeout(timer);if(!rec)return;const r0=rec;rec=null;rb.disabled=true;rs.textContent='جارٍ المعالجة…';try{got=await r0.stop();}catch(e){rb.disabled=false;rb.textContent='ابدأ التسجيل';rs.textContent='تعذّر التسجيل: '+(e&&(e.message||e.name)||'');return;}rb.disabled=false;rb.textContent='ابدأ التسجيل';rb.style.display='none';$('#fxa',el).style.display='block';rs.textContent='تم التسجيل. اختر نمطًا واسمعه ثم احفظ.';pick('clean');};
   const pick=async fx=>{
     if(!got)return;rs.textContent='جارٍ التجهيز…';
     try{const o=await applyFx(got.data,got.rate,fx);wav=encodeWav(o,22050,1.5);$('#sv',el).disabled=false;el.querySelectorAll('[data-fx]').forEach(b=>b.classList.toggle('on',b.dataset.fx===fx));rs.textContent='النمط: '+FX.find(x=>x[0]===fx)[1];new Audio(URL.createObjectURL(new Blob([wav],{type:'audio/wav'}))).play();}
@@ -1820,7 +1840,7 @@ function recSheet(k){
   };
   rb.onclick=async()=>{
     if(rec){stop();return;}
-    try{rec=await startRec();}catch(e){toast('لم يُسمح باستخدام الميكروفون');return;}
+    try{rec=await startRec();}catch(e){toast('تعذّر الميكروفون: '+((e&&(e.name||e.message))||''));return;}
     rb.textContent='إيقاف التسجيل';rs.textContent='يسجّل الآن… تكلّم';timer=setTimeout(stop,6000);
   };
   el.querySelectorAll('[data-fx]').forEach(b=>b.onclick=()=>pick(b.dataset.fx));
