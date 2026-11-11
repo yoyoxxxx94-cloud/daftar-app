@@ -28,9 +28,15 @@
       if (name !== 'downloads') return null;
       return {
         save: async function (o) {
-          var b64 = await toB64(o.data);
-          var r = Android.saveFile(b64, o.filename, mimeOf(o.filename, o.data));
-          if (r !== 'ok') throw new Error('save failed');
+          var b64 = await toB64(o.data), mime = mimeOf(o.filename, o.data);
+          if (/^image\//.test(mime)) {
+            /* الصور: تُحفظ في الاستوديو */
+            var r = Android.saveFile(b64, o.filename, mime);
+            if (r !== 'ok') throw new Error('save failed');
+          } else {
+            /* الملفات: تفتح قائمة المشاركة (مدير الملفات، واتساب، جيميل...) */
+            if (!Android.shareFile(b64, o.filename, mime)) throw new Error('share failed');
+          }
           return true;
         }
       };
@@ -44,6 +50,14 @@
     if (!f) throw new Error('nothing to share');
     var b64 = await toB64(f);
     if (!Android.shareFile(b64, f.name, f.type || mimeOf(f.name))) throw new Error('share failed');
+  };
+
+  /* حفظ ملف: قائمة المشاركة (مدير الملفات وغيره) */
+  window.__saveAsFile = async function (data, name, mime) {
+    try {
+      var b64 = await toB64(data);
+      return !!Android.shareFile(b64, name, mime || mimeOf(name, data));
+    } catch (e) { return false; }
   };
 
   /* ---------- 2) مزامنة تنبيهات الجدول إلى المنبّه الأصلي ---------- */
@@ -77,11 +91,17 @@
         if (o === 0 && bk.last === isoB) continue;
         var tt = (bk.time || '14:00').split(':').map(Number);
         var atB = msOf(isoB, (tt[0] || 0) * 60 + (tt[1] || 0));
-        if (atB > now) out.push({ id: 'bk|' + isoB, at: atB, title: 'تذكير النسخة الاحتياطية', body: 'احفظ نسخة اليوم من دفترك' });
+        if (atB > now) out.push({ id: 'bk|' + isoB, at: atB, title: 'تذكير النسخة الاحتياطية', body: 'احفظ نسخة اليوم من دفترك', meta: { tone: 'bell', say: 'احفظ نسخة اليوم من دفترك' } });
       }
     }
 
     if (!a.on || !sc) return out;
+    var mk = function (k, say, vk) {
+      var t = 'bell';
+      try { t = toneOf(k); } catch (e) { }
+      try { if (vk && typeof hasVoice === 'function' && hasVoice(vk)) t = 'c_v_' + vk; } catch (e) { }
+      return { tone: t, say: say };
+    };
 
     for (var off = 0; off < WINDOW_DAYS; off++) {
       var d = new Date(base.getFullYear(), base.getMonth(), base.getDate() + off, 12);
@@ -99,11 +119,12 @@
           var atG = msOf(iso, t.fm - a.goMin);
           if (atG > now) out.push({
             id: iso + '|go', at: atG, title: 'وقت التحرك',
-            body: 'حصتك الأولى اليوم (الحصة ' + (ORD[t.p - 1] || t.p) + ') بعد ' + arMin(a.goMin) + (c && c.subject ? ' · ' + c.subject : '')
+            body: 'حصتك الأولى اليوم (الحصة ' + (ORD[t.p - 1] || t.p) + ') بعد ' + arMin(a.goMin) + (c && c.subject ? ' · ' + c.subject : ''),
+            meta: mk('S', 'وقت التحرك', 'go')
           });
         }
         [['s', t.fm, 'بداية'], ['e', t.tm, 'نهاية']].forEach(function (x) {
-          if (first && t.p < first) return;
+          if (!taught(t.p)) return;
           var m = alertMin(t.p, x[0]);
           if (!m) return;
           var at = msOf(iso, x[1] - m);
@@ -111,7 +132,8 @@
           var l1 = c ? [c.grade, c.cls].filter(Boolean).join('/') : '';
           out.push({
             id: iso + '|' + t.p + x[0], at: at, title: 'تنبيه الحصة',
-            body: 'تبقى ' + arMin(m) + ' على ' + x[2] + ' الحصة ' + (ORD[t.p - 1] || t.p) + (c && c.subject ? ' · ' + c.subject : '') + (l1 ? ' · ' + l1 : '')
+            body: 'تبقى ' + arMin(m) + ' على ' + x[2] + ' الحصة ' + (ORD[t.p - 1] || t.p) + (c && c.subject ? ' · ' + c.subject : '') + (l1 ? ' · ' + l1 : ''),
+            meta: mk(x[0] === 'e' ? 'E' : 'S', 'تبقى ' + arMin(m) + ' على ' + x[2] + ' الحصة ' + (ORD[t.p - 1] || t.p), x[0] + t.p)
           });
         });
       });
@@ -120,8 +142,23 @@
     return out.slice(0, 400);
   }
 
+  var toneSent = {};
+  function syncTones() {
+    try {
+      var list = JSON.parse(localStorage.getItem('tb_tones') || '[]');
+      list.forEach(function (t) {
+        var key = t.id + ':' + (t.data || '').length;
+        if (toneSent[key] || !t.data) return;
+        var i = t.data.indexOf(',');
+        if (i < 0) return;
+        if (Android.storeTone(t.id, t.data.slice(i + 1))) toneSent[key] = 1;
+      });
+    } catch (e) { }
+  }
+
   window.nativeSyncNow = function () {
     try {
+      syncTones();
       var list = buildList(), json = JSON.stringify(list);
       if (json === lastJson && Android.alarmCount() === list.length) return;
       Android.setAlarms(json);
@@ -136,6 +173,27 @@
   addEventListener('load', function () { setTimeout(window.nativeSyncNow, 2500); });
   document.addEventListener('visibilitychange', function () { if (!document.hidden) window.nativeSyncNow(); });
 
+  /* ---------- الإملاء الصوتي عبر محرك أندرويد ---------- */
+  if (!window.SpeechRecognition && !window.webkitSpeechRecognition && Android.startListening) {
+    var curSR = null;
+    var NativeSR = function () { this.lang = 'ar-SA'; this.continuous = false; this.interimResults = false; };
+    NativeSR.prototype.start = function () { curSR = this; Android.startListening(this.lang || 'ar-SA'); };
+    NativeSR.prototype.stop = function () { if (curSR === this) curSR = null; try { Android.stopListening(); } catch (e) { } if (this.onend) this.onend(); };
+    window.__spRes = function (t, fin) {
+      if (!curSR || !curSR.onresult) return;
+      var alt = [{ transcript: t }]; alt.isFinal = !!fin;
+      curSR.onresult({ resultIndex: 0, results: [alt] });
+    };
+    window.__spEnd = function () { var r = curSR; if (r && r.onend) r.onend(); };
+    window.__spErr = function (code) {
+      var r = curSR; curSR = null;
+      if (code === 'unavailable') { try { toast('خدمة التعرف على الكلام غير متوفرة في جوالك'); } catch (e) { } code = 'service-not-allowed'; }
+      if (r && r.onerror) r.onerror({ error: code });
+    };
+    window.SpeechRecognition = NativeSR;
+    window.webkitSpeechRecognition = NativeSR;
+  }
+
   /* ---------- 3) أزرار الاختبار والأذونات في بطاقة التنبيهات ---------- */
   window.addEventListener('click', function (ev) {
     var b = ev.target && ev.target.closest && ev.target.closest('[data-act]');
@@ -144,7 +202,10 @@
     if (act === 'alTest') {
       ev.stopImmediatePropagation(); ev.preventDefault();
       window.nativeSyncNow();
-      Android.testAlarm(10);
+      try {
+        syncTones();
+        Android.setAlarmMeta('test|' + Date.now(), Date.now() + 10000, 'تنبيه تجريبي', 'هذا اختبار نغمة بداية الحصة', JSON.stringify({ tone: toneOf('S'), say: 'الحصة الثالثة' }));
+      } catch (e2) { Android.testAlarm(10); }
       try { toast('سيصلك تنبيه تجريبي بعد ١٠ ثوانٍ، أطفئ الشاشة لتجرّبه'); } catch (e) { }
     } else if (act === 'alPerm') {
       ev.stopImmediatePropagation(); ev.preventDefault();
