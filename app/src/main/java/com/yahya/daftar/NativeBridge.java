@@ -67,6 +67,68 @@ public class NativeBridge {
         }
     }
 
+    private android.media.MediaRecorder rec;
+    private java.io.File recFile;
+
+    private void recQuiet() {
+        try {
+            if (rec != null) {
+                try {
+                    rec.stop();
+                } catch (Exception ignored) {
+                }
+                rec.release();
+            }
+        } catch (Exception ignored) {
+        }
+        rec = null;
+    }
+
+    /** تسجيل صوتي مباشر عبر أندرويد (أضمن من ميكروفون الصفحة). */
+    @JavascriptInterface
+    public String recStart() {
+        try {
+            if (android.os.Build.VERSION.SDK_INT >= 23
+                    && app.checkSelfPermission(android.Manifest.permission.RECORD_AUDIO) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+                return "perm";
+            }
+            recQuiet();
+            recFile = new java.io.File(app.getCacheDir(), "rec.m4a");
+            rec = new android.media.MediaRecorder();
+            rec.setAudioSource(android.media.MediaRecorder.AudioSource.MIC);
+            rec.setOutputFormat(android.media.MediaRecorder.OutputFormat.MPEG_4);
+            rec.setAudioEncoder(android.media.MediaRecorder.AudioEncoder.AAC);
+            rec.setAudioChannels(1);
+            rec.setAudioSamplingRate(22050);
+            rec.setAudioEncodingBitRate(64000);
+            rec.setOutputFile(recFile.getAbsolutePath());
+            rec.prepare();
+            rec.start();
+            return "ok";
+        } catch (Exception e) {
+            recQuiet();
+            return "err:" + e;
+        }
+    }
+
+    @JavascriptInterface
+    public String recStop() {
+        try {
+            recQuiet();
+            if (recFile == null || !recFile.exists()) return "";
+            java.io.FileInputStream in = new java.io.FileInputStream(recFile);
+            java.io.ByteArrayOutputStream out = new java.io.ByteArrayOutputStream();
+            byte[] buf = new byte[8192];
+            int n;
+            while ((n = in.read(buf)) > 0) out.write(buf, 0, n);
+            in.close();
+            recFile.delete();
+            return Base64.encodeToString(out.toByteArray(), Base64.NO_WRAP);
+        } catch (Exception e) {
+            return "";
+        }
+    }
+
     @JavascriptInterface
     public boolean removeTone(String id) {
         try {
