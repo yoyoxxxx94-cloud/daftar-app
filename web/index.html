@@ -68,6 +68,17 @@ p.mut,.mut{color:var(--mut);font-size:14px}
 input[type=text],input[type=number],input[type=date],input[type=time],select,textarea{width:100%;padding:10px 12px;border:1.5px solid var(--line);border-radius:12px;background:var(--card);min-height:44px}
 textarea{min-height:140px;resize:vertical}
 label.f{display:block;font-weight:700;font-size:14px;margin:10px 0 4px}
+.btn.sec.on{background:#16a34a!important;border-color:#15803d!important;color:#fff!important;box-shadow:0 0 0 3px #bbf7d0}.btn.sec.on::before{content:'✓ ';font-weight:900}
+.dgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px}
+.dchip{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:58px;padding:6px 3px;border:2px solid var(--line);border-radius:12px;background:var(--card);font-family:inherit;text-align:center;cursor:pointer}
+.dchip b{font-size:11.5px;line-height:1.25}.dchip small{font-size:10.5px;color:var(--mut);direction:ltr}
+.dchip.on{border-color:#16a34a;background:#e7f6ec}.dchip.on b::before{content:'✓ ';color:#16a34a}
+.nfull_unused{display:block;height:auto;min-height:0;width:auto;margin:3px auto 4px;line-height:1.3;padding:1px 8px;border-radius:999px;background:#fef3c7;border:1.5px solid #f59e0b;color:#92400e;font-size:11px;font-weight:800;font-family:inherit}
+.vgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.vt{display:flex;flex-direction:column;gap:4px}
+.vtn{min-height:50px;padding:6px 4px;border:2px solid var(--line);border-radius:12px;background:var(--card);font-family:inherit;font-size:13px;font-weight:700;line-height:1.25;text-align:center;cursor:pointer}
+.vt.ok .vtn{border-color:#16a34a;background:#e7f6ec;color:#166534}
+.vta{display:flex;gap:6px;justify-content:center}.vta .btn{min-height:28px;height:28px;padding:0 14px}
 .chips{display:flex;flex-wrap:wrap;gap:8px}
 .adjl{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
 .adjc{background:var(--pri-soft);color:var(--pri);border-radius:999px;padding:4px 10px;font-size:12.5px;font-weight:700}
@@ -118,7 +129,7 @@ label.f{display:block;font-weight:700;font-size:14px;margin:10px 0 4px}
 /* جدول المتابعة */
 .scroller{flex:1;min-height:0;overflow:auto;background:var(--card);-webkit-overflow-scrolling:touch}
 table.tb{border-collapse:separate;border-spacing:0;min-width:100%}
-.tb th.shd,.tb td.shd{border-bottom:1px solid #6b7280;border-inline-start:1px solid #6b7280}
+.tb th.shd,.tb td.shd{border-bottom:1px solid #9ca3af;border-inline-start:1px solid #9ca3af}
 .tb th,.tb td{border-bottom:1px solid #6b7280;border-inline-start:1px solid #6b7280;background:var(--card);padding:0}
 .tb th.corner{max-width:100px;position:sticky;top:0;right:0;z-index:5;min-width:100px;width:1%;font-size:13px;background:var(--pri);color:var(--pri-ink);font-weight:800}
 .tb th.colh{position:sticky;top:0;z-index:3;min-width:66px;width:50%;height:72px;vertical-align:top;background:var(--pri-soft);color:var(--ink)}
@@ -162,7 +173,7 @@ table.tb{border-collapse:separate;border-spacing:0;min-width:100%}
 .tb td.cell.lo button{color:var(--warn)}
 .tb tr:nth-child(even) td.nm{background:color-mix(in srgb,var(--card) 92%,var(--pri))}
 .hrow2{display:flex;align-items:center;gap:8px;min-height:36px}.hrow2 .np{flex:1;min-width:0}
-.fsb.fadd{background:#ccfbf1;color:#0f5c63;border:1.5px solid #0f5c63}.sdt.today{background:#fef3c7;color:#92400e;border:1.5px solid #f59e0b;font-weight:800;font-size:14px;padding:8px 12px}tr.selrow>td:first-child,tr.selrow>th:first-child{background:#d1d5db!important;box-shadow:inset 0 0 0 2px #6b7280}td.selhi{background:#e5e7eb!important;box-shadow:inset 0 0 0 3px #6b7280;transition:background .2s}
+.fsb.fadd{background:#ccfbf1;color:#0f5c63;border:1.5px solid #0f5c63}.sdt.today{background:#fef3c7;color:#92400e;border:1.5px solid #f59e0b;font-weight:800;font-size:14px;padding:8px 12px}tr.selrow>td:first-child,tr.selrow>th:first-child{background:#dbeafe!important;box-shadow:none!important;outline:0!important}td.selhi{background:#bfdbfe!important;box-shadow:none!important;outline:0!important;transition:background .2s}
 .mcard{border:1px solid color-mix(in srgb,var(--c) 22%,transparent)!important;background:color-mix(in srgb,var(--c) 5%,var(--card))!important;border-radius:18px!important}.mcard h3{display:flex;align-items:center;gap:10px;margin-top:0}.mic{flex:none;width:42px;height:42px;border-radius:14px;background:var(--c);color:#fff;display:inline-flex;align-items:center;justify-content:center}.mcard .btn.sec{background:color-mix(in srgb,var(--c) 10%,var(--card));color:var(--c);border-color:color-mix(in srgb,var(--c) 25%,transparent)}
 .sopt{display:flex;align-items:center;gap:12px;width:100%;padding:12px;border-radius:14px;border:2px solid #d6dde0;background:#fff;color:#1f2937;text-align:start;margin-top:8px;font:inherit}.sopt .sic{flex:none;width:44px;height:44px;border-radius:12px;background:#eef3f4;color:#0f5c63;display:flex;align-items:center;justify-content:center}.sopt .stx{flex:1;display:flex;flex-direction:column;gap:2px}.sopt .stx b{font-size:15px}.sopt .stx small{font-size:12px;color:#6b7280;line-height:1.5}.sopt .sok{flex:none;font-size:12px;font-weight:800;color:#166534}.sopt.on{background:#dcfce7;border-color:#16a34a}.sopt.on .sic{background:#16a34a;color:#fff}.nowdot.brkdot{position:static;display:block;width:6px;height:6px;margin:5px auto 0}.nowdot{position:absolute;top:3px;inset-inline-end:3px;width:8px;height:8px;border-radius:50%;background:#dc2626;pointer-events:none;animation:nowp 1.2s ease-in-out infinite}@keyframes nowp{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.5);opacity:.45}}.fill,.emp{position:relative}.pinin{text-align:center;font-size:28px;letter-spacing:12px;direction:ltr}.fsb{flex:none;background:var(--pri-soft);color:var(--pri);border-radius:999px;padding:2px 10px;font-weight:800;font-size:12px;min-height:26px}
 .logo{flex:none;display:flex;flex-direction:column;align-items:flex-start;line-height:1.1;width:92px}
@@ -187,7 +198,8 @@ body.full #nav,body.full .hrest,body.full .addrow,body.full .mvhint,body.full .h
 .addrow{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;padding:10px 8px;position:sticky;right:0}.addrow .ar1{grid-column:1/-1;min-height:48px;font-size:15px}.addrow .ar2{min-height:46px;font-size:13.5px;line-height:1.25;white-space:normal}
 .addrow .btn{min-width:0;padding:8px 6px;font-size:13px}.bkc.add2{border-style:dashed;white-space:nowrap}.ordr{display:flex;align-items:center;gap:8px;padding:6px 8px;margin-bottom:6px;border:1.5px solid var(--line);border-radius:12px;background:#fff}.ordr b{flex:1;min-width:0;font-size:14px}.ordr small{opacity:.7}.ordr .hd{width:46px;height:42px;border-radius:10px;background:var(--pri);color:#fff;font-size:22px;display:flex;align-items:center;justify-content:center;touch-action:none;cursor:grab;flex:none}.ordr.drg{background:#e6f3f2;border-color:var(--pri);box-shadow:0 4px 14px rgba(0,0,0,.18)}
 .sc td.off{background:repeating-linear-gradient(135deg,var(--paper) 0 6px,var(--card) 6px 12px)}
-.atn{display:block;font-style:normal;font-size:9.5px;font-weight:700;margin-top:2px;line-height:1.2}.mvw.dup .mvr{border-color:#dc2626;background:#fef2f2}.mvd{color:#b91c1c;font-size:13px;font-weight:700;padding:2px 10px}.mvd:empty{display:none}.mvl{max-height:44vh;overflow:auto;margin:10px 0 0;display:flex;flex-direction:column;gap:8px}.mvr{display:flex;align-items:center;gap:8px;border:2px solid var(--line);border-radius:14px;padding:6px 8px;background:var(--paper)}.mvr.act{border-color:#dc2626;box-shadow:0 0 0 3px #fecaca}.mvn{flex:none;width:34px;height:34px;border-radius:50%;background:var(--pri);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:17px}.mvr input{flex:1;min-width:0;border:none;background:transparent;font-size:18px}.mvx{flex:none;width:34px;height:34px;border-radius:10px;background:#fee2e2;color:#b91c1c;font-weight:800}.dnl{display:flex;flex-direction:column;gap:6px}.dnr{display:flex;align-items:center;gap:10px;background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:6px 10px}.dnr b{flex:1}.dnr.all{background:#dcfce7;border-color:#16a34a}.dnb{width:42px;height:42px;border-radius:12px;font-size:24px;font-weight:800;background:#16a34a;color:#fff}.dnr:not(.all) .dnb:first-of-type{background:#dc2626}.dnn{min-width:30px;text-align:center;font-size:20px;font-weight:800}.dpg{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px;margin-top:6px}
+.atn{display:block;font-style:normal;font-size:9.5px;font-weight:700;margin-top:2px;line-height:1.2}.mvw.dup .mvr{border-color:#dc2626;background:#fef2f2}.mvd{color:#b91c1c;font-size:13px;font-weight:700;padding:2px 10px}.mvd:empty{display:none}.mvl{max-height:44vh;overflow:auto;margin:10px 0 0;display:flex;flex-direction:column;gap:8px}.mvr{display:flex;align-items:center;gap:8px;border:2px solid var(--line);border-radius:14px;padding:6px 8px;background:var(--paper)}.mvr.act{border-color:#dc2626;box-shadow:0 0 0 3px #fecaca}.mvn{flex:none;width:34px;height:34px;border-radius:50%;background:var(--pri);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:17px}.mvr input{flex:1;min-width:0;border:none;background:transparent;font-size:18px}.mvx{flex:none;width:34px;height:34px;border-radius:10px;background:#fee2e2;color:#b91c1c;font-weight:800}.dnl{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.dnr{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:4px;background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:6px 4px}
+.dnr b{grid-column:1/-1;text-align:center;font-size:13px}.dnr b{flex:1}.dnr.all{background:#dcfce7;border-color:#16a34a}.dnb{width:34px;height:34px;justify-self:center;border-radius:10px;font-size:20px;font-weight:800;background:#16a34a;color:#fff}.dnr:not(.all) .dnb:first-of-type{background:#dc2626}.dnn{min-width:18px;text-align:center;font-size:18px;font-weight:800}.dpg{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px;margin-top:6px}
 .dpg div{display:flex;flex-direction:column;gap:2px}
 
 /* النوافذ */
@@ -254,7 +266,15 @@ table.st{border-collapse:separate;border-spacing:5px;min-width:100%}
 .st td button.emp{background:var(--paper);color:var(--mut);font-size:18px}
 .st td button.off{background:var(--paper);opacity:.55}
 .st td.brkc{background:#f6ecd2;color:#7a5a1b;font-weight:800;text-align:center;font-size:12.5px;border-radius:5px}
-.tones{display:flex;flex-direction:column;gap:6px}
+.tones{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.tc{position:relative}
+.tn{display:block;cursor:pointer;margin:0}
+.tn input{position:absolute;opacity:0;width:0;height:0}
+.tnb{display:flex;align-items:center;justify-content:center;text-align:center;min-height:86px;padding:8px 2px 38px;border:2px solid var(--line);border-radius:12px;font-size:11px;font-weight:700;line-height:1.25;background:var(--card)}
+.tn input:checked+.tnb{border-color:#16a34a;background:#e7f6ec;color:#166534}
+.tn input:checked+.tnb::before{content:'✓ ';font-weight:900}
+.tc .tpl{position:absolute;bottom:6px;left:50%;transform:translateX(-50%);display:flex;flex-direction:row;align-items:center;justify-content:center;width:38px;min-width:0;height:28px;min-height:0;padding:0;font-size:13px;border-radius:999px}
+.tc .tdl{position:absolute;top:4px;left:4px;min-height:22px;padding:0 7px;font-size:11px;border-radius:999px}
 .tone{display:flex;gap:8px;align-items:center;padding:4px 0;border-bottom:1px solid var(--line)}
 .sumbar{display:flex;justify-content:space-between;align-items:center;gap:8px;background:var(--acc);color:#fff;padding:6px 12px;font-weight:800;font-size:13px}
 .sumgrp{display:flex;gap:6px;overflow-x:auto;padding:6px 10px;background:var(--paper);border-bottom:1px solid var(--line)}
@@ -389,6 +409,7 @@ function syncCum(b){
     b.cols.splice(i+1,0,{id:uid(),title:'المجموع حتى الفترة '+(ORD[p-1]||p),kind:'sum',auto:'noorcum',term:t,per:p,fill:'#bae6fd'});});});
 }
 function fixCols(b){
+  (b.noor||[]).forEach(n=>{if(n.fill==='#fde68a')n.fill='#e5e7eb';});b.cols.forEach(c=>{if(c.kind==='sum'&&c.auto==='noor'&&c.fill==='#fde68a')c.fill='#e5e7eb';});
   if(b.noor&&b.noor.length||b.cols.some(c=>c.auto==='noorcum'))try{syncCum(b);}catch(e){}
   b.cols.forEach(c=>{c.term=Math.max(1,Math.min(9,parseInt(c.term)||1));c.per=Math.max(1,Math.min(20,parseInt(c.per)||1));});
   {const ts=new Set(Array.from({length:Math.max(3,b.nTerms||3)},(_,i)=>i+1));b.cols.forEach(c=>ts.add(c.term));const to=(Array.isArray(b.termOrder)?b.termOrder:[]).filter(t=>ts.has(t));ts.forEach(t=>{if(!to.includes(t))to.push(t);});b.termOrder=to;}
@@ -715,10 +736,10 @@ function applySel(){
     if(SELH[k]){const td=bt.closest('td'),tr=bt.closest('tr');if(td)td.classList.add('selhi');if(tr)tr.classList.add('selrow');}
   });
 }
-function markSel(sid,id){SELH[sid+'|'+id]={exp:Date.now()+5000};applySel();}
+function markSel(sid,id){SELH[sid+'|'+id]={exp:Date.now()+10000};applySel();}
 setInterval(()=>{
   const now=Date.now(),open=!!document.querySelector('.ov');let ch=false;
-  Object.keys(SELH).forEach(k=>{if(open)SELH[k].exp=now+5000;else if(now>SELH[k].exp){delete SELH[k];ch=true;}});
+  Object.keys(SELH).forEach(k=>{if(open)SELH[k].exp=now+10000;else if(now>SELH[k].exp){delete SELH[k];ch=true;}});
   if(ch)applySel();
 },400);
 function render(){
@@ -878,7 +899,7 @@ function updateCell(sid,cid){
   const b=curBook();const s=b.students.find(x=>x.id===sid),c=b.cols.find(x=>x.id===cid);
   const td=$('td.cell[data-sid="'+sid+'"][data-cid="'+cid+'"]');
   if(!td||!s||!c)return;
-  const x=cellHTML(b,s,c),tm=tintMap(b);td.className=x.cls+(tm[cid]!==undefined?' tint'+tm[cid]:'');td.firstElementChild.innerHTML=x.txt;updateSums(sid);
+  const x=cellHTML(b,s,c),tm=tintMap(b);const wasShd=td.classList.contains('shd');td.className=x.cls+(wasShd?' shd':'')+(tm[cid]!==undefined?' tint'+tm[cid]:'');try{applySel();}catch(e){}td.firstElementChild.innerHTML=x.txt;updateSums(sid);
 }
 function moveItem(arr,i,d){const j=i+d;if(j<0||j>=arr.length)return false;[arr[i],arr[j]]=[arr[j],arr[i]];return true;}
 
@@ -955,8 +976,9 @@ function sumOptFor(b,o){
     if(sm.auto==='per'){if(on)o.nosum=true;else delete o.nosum;return null;}
     sm.src=sm.src||[];if(on)sm.src=sm.src.filter(x=>x!==o.id);else sm.src.push(o.id);return null;}};
 }
-function nameMoveSheet(title,lab,val,onSave,onMove,msg,onDel,sumOpt,ins,delAll){
-  const el=openSheetB('<h2>'+title+'</h2><label class="f" for="ct">'+lab+'</label><input type="text" id="ct" value="'+esc(val)+'" placeholder="اكتب الاسم"><div class="acts"><button class="btn full" id="sv">حفظ الاسم</button><button class="btn ghost" id="pv">→ تقديم</button><button class="btn ghost" id="nx">تأخير ←</button>'+(ins?'<button class="btn sec" id="ib">إضافة مجموع قبلها</button><button class="btn sec" id="ia">إضافة مجموع بعدها</button>':'')+(sumOpt?'<button class="btn sec full" id="sumt">'+(sumOpt.on?'حذف الجمع':'جمع')+'</button>':'')+(delAll?'<button class="btn bad" id="del">حذف هذه</button><button class="btn bad" id="dela">حذف الجميع</button>':'<button class="btn bad full" id="del">حذف</button>')+'</div>');
+function nameMoveSheet(title,lab,val,onSave,onMove,msg,onDel,sumOpt,ins,delAll,extra){
+  const el=openSheetB('<h2>'+title+'</h2><label class="f" for="ct">'+lab+'</label><input type="text" id="ct" value="'+esc(val)+'" placeholder="اكتب الاسم"><div class="acts"><button class="btn full" id="sv">حفظ الاسم</button><button class="btn ghost" id="pv">→ تقديم</button><button class="btn ghost" id="nx">تأخير ←</button>'+(ins?'<button class="btn sec" id="ib">إضافة مجموع قبلها</button><button class="btn sec" id="ia">إضافة مجموع بعدها</button>':'')+(sumOpt?'<button class="btn sec full" id="sumt">'+(sumOpt.on?'حذف الجمع':'جمع')+'</button>':'')+(extra?'<button class="btn sec full" id="exb" style="background:#fef3c7;border-color:#f59e0b;color:#92400e">'+extra.label+'</button>':'')+(delAll?'<button class="btn bad" id="del">حذف هذه</button><button class="btn bad" id="dela">حذف الجميع</button>':'<button class="btn bad full" id="del">حذف</button>')+'</div>');
+  if(extra)$('#exb',el).onclick=()=>{el.remove();extra.fn();};
   if(delAll)$('#dela',el).onclick=async()=>{el.remove();if(await confirmDelete(delAll.msg)){delAll.fn();save();render();}};
   if(ins){$('#ib',el).onclick=()=>{const w=ins(0);if(w){toast(w);return;}el.remove();render();toast('أُضيف مجموع قبلها');};$('#ia',el).onclick=()=>{const w=ins(1);if(w){toast(w);return;}el.remove();render();toast('أُضيف مجموع بعدها');};}
   const st=$('#sumt',el);if(st)st.onclick=()=>{const r=sumOpt.fn();if(r){toast(r);return;}save();el.remove();render();toast(sumOpt.on?'أُزيلت من الجمع':'أُضيفت إلى الجمع');};
@@ -1376,7 +1398,7 @@ async function addColumnFull(){
   $('#a20',el).onclick=()=>add('g20',20,'التقويمات الشفهية والتحريرية');
   $('#no',el).onclick=()=>el.close();
 }
-const NFILL=['#fde68a','#fdba74','#fca5a5','#f9a8d4','#d8b4fe','#6ee7b7','#bef264'];
+const NFILL=['#e5e7eb','#fdba74','#fca5a5','#f9a8d4','#d8b4fe','#6ee7b7','#bef264'];
 const noorThr=b=>{const p=b.pass||{};return (p.pass===undefined?50:p.pass)-(p.exam===undefined?15:p.exam);};
 function noorStat(b,s,t,p){const ids=(b.noor||[]).filter(x=>(x.term||1)===t&&(x.per||1)===p).map(x=>x.id);if(!ids.length)return null;let tot=0;for(const id of ids){const v=(b.ns||{})[s.id+'|'+id];if(typeof v!=='number')return null;tot+=v;}return tot<noorThr(b)?'low':'ok';}
 const nkCls=st=>st==='low'?' low':st==='ok'?' nkok':'';
@@ -1402,7 +1424,7 @@ function unifyNoor(b,t,p,f){(b.noor||[]).forEach(x=>{if((x.term||1)===t&&(x.per|
 function hasNoorSum(b,t,p){return b.cols.some(c=>c.kind==='sum'&&c.auto==='noor'&&c.term===t&&c.per===p);}
 function noorSheet(nid){
   const b=curBook();b.noor=b.noor||[];const n=nid?b.noor.find(x=>x.id===nid):null;
-  if(n){nameMoveSheet('هل تريد تعديل مهارة نور؟','اسم المهارة',n.title||'',t=>{n.title=t||n.title;},d=>moveSame(b.noor,b.noor.indexOf(n),d,k=>(k.term||1)===(n.term||1)&&(k.per||1)===(n.per||1)),'حذف مهارة نور «'+n.title+'» مع كل درجاتها؟',()=>{b.noor=b.noor.filter(x=>x.id!==nid);dropKeys(b,[nid]);},null,null,{msg:'حذف كل مهارات نور في «'+TERMN[n.term||1]+' · '+PERN[n.per||1]+'» مع مجموعها وكل درجاتها؟',fn:()=>{const ids=b.noor.filter(x=>(x.term||1)===(n.term||1)&&(x.per||1)===(n.per||1)).map(x=>x.id);b.noor=b.noor.filter(x=>!ids.includes(x.id));dropKeys(b,ids);b.cols=b.cols.filter(c=>!(c.kind==='sum'&&c.auto==='noor'&&c.term===(n.term||1)&&c.per===(n.per||1)));fixCols(b);}});return;}
+  if(n){nameMoveSheet('هل تريد تعديل مهارة نور؟','اسم المهارة',n.title||'',t=>{n.title=t||n.title;},d=>moveSame(b.noor,b.noor.indexOf(n),d,k=>(k.term||1)===(n.term||1)&&(k.per||1)===(n.per||1)),'حذف مهارة نور «'+n.title+'» مع كل درجاتها؟',()=>{b.noor=b.noor.filter(x=>x.id!==nid);dropKeys(b,[nid]);},null,null,{msg:'حذف كل مهارات نور في «'+TERMN[n.term||1]+' · '+PERN[n.per||1]+'» مع مجموعها وكل درجاتها؟',fn:()=>{const ids=b.noor.filter(x=>(x.term||1)===(n.term||1)&&(x.per||1)===(n.per||1)).map(x=>x.id);b.noor=b.noor.filter(x=>!ids.includes(x.id));dropKeys(b,ids);b.cols=b.cols.filter(c=>!(c.kind==='sum'&&c.auto==='noor'&&c.term===(n.term||1)&&c.per===(n.per||1)));fixCols(b);}},{label:'إضافة '+n.max+' لكل الطلاب',fn:()=>noorFull(nid)});return;}
   if(!n){noorMulti();return;}
   const el=openSheetB('<h2>'+(n?'تعديل مهارة نور':'إضافة مهارة نور')+'</h2><p class="mut">مهارات المادة المقرّرة في برنامج نور: اكتب اسم المهارة وحدّد درجتها.</p>'+(n?'':'<div id="nlib"></div>')+'<label class="f" for="nn">اسم المهارة</label><input type="text" id="nn" value="'+esc(n?n.title:'')+'" placeholder="مثال: جمع الأعداد">'+SECHTML+
     '<label class="f" for="nx">الدرجة (من كم؟)</label><input type="number" id="nx" inputmode="decimal" value="'+(n?n.max:10)+'" min="1"><div id="nsb"></div><label class="f">لون التظليل (يشمل كل مهارات نور والمجموع في هذه الفترة)</label><div class="pal" id="nf" style="grid-template-columns:repeat(5,1fr);margin-bottom:12px"></div>'+
@@ -1497,6 +1519,12 @@ function noorMulti(){
     b.lastSec={term:cur.term,per:cur.per};
     fixCols(b);save();el.remove();render();toast('تمت إضافة المهارات والمجموع');
   };
+}
+function noorFull(nid){
+  const b=curBook(),n=(b.noor||[]).find(x=>x.id===nid);if(!n)return;b.ns=b.ns||{};
+  let c=0;const t=isoToday();
+  b.students.forEach(s=>{const k=s.id+'|'+nid,o=b.ns[k],has=o!==undefined&&o!==''&&o!==null;if(o===n.max)return;if(has&&typeof o==='number'){b.prev=b.prev||{};(b.prev[k]=b.prev[k]||[]).push({v:o,t:Date.now()});if(b.prev[k].length>prevMax())b.prev[k].shift();}b.sdt=b.sdt||{};b.sdt[k]=t;b.ns[k]=n.max;c++;});
+  save();render();toast('تمت إضافة '+n.max+' لكل الطلاب');
 }
 function noorCell(sid,nid){
   const b=curBook(),n=b.noor.find(x=>x.id===nid),s=b.students.find(x=>x.id===sid);b.ns=b.ns||{};const k=sid+'|'+nid;
@@ -1760,9 +1788,69 @@ function voiceUse(k,buf){try{if(VOICE[k])URL.revokeObjectURL(VOICE[k]);}catch(e)
 function hasVoice(k){return !!VOICE[k];}
 async function loadVoices(){const all=await vGetAll();Object.keys(all).forEach(k=>voiceUse(k,all[k]));try{window.nativeSyncSoon&&nativeSyncSoon();}catch(e){}}
 setTimeout(loadVoices,700);
-function vLabel(k){return k==='go'?'وقت التحرك':(k[0]==='s'?'بداية':'نهاية')+' الحصة '+(ORD[+k.slice(1)-1]||k.slice(1));}
+function vEvs(){S.voiceEv=S.voiceEv||[];return S.voiceEv;}
+function vLabel(k){
+  if(k[0]==='x'){const e=vEvs().find(v=>'x'+v.id===k);return e?e.name:'تنبيه خاص';}
+  return k==='go'?'وقت التحرك':(k[0]==='s'?'بداية':'نهاية')+' الحصة '+(ORD[+k.slice(1)-1]||k.slice(1));
+}
 function voiceKeys(){let n=7;try{n=Math.max.apply(null,S.sched.days.map(d=>dayCount(S.sched,d)));}catch(e){}n=Math.max(1,Math.min(n||7,12));const k=['go'];for(let p=1;p<=n;p++)k.push('s'+p);for(let p=1;p<=n;p++)k.push('e'+p);return k;}
-const FX=[['raw','كما سجّلت'],['clean','صافٍ'],['radio','إذاعي'],['deep','عميق'],['hall','فخم بصدى'],['high','رفيع'],['calm','هادئ']];
+const FX=[['raw','كما سجّلت'],['clean','صافٍ'],['radio','إذاعي'],['hall','فخم بصدى'],['high','رفيع'],['calm','هادئ']];
+const NRL=[['0','بدون'],['1','خفيفة'],['2','قوية']];
+const CHIMES=[['none','بدون نغمة'],['dd','١ دينغ دونغ'],['up','٢ ثلاثية صاعدة'],['four','٣ رباعية'],['soft','٤ جرس هادئ']];
+const CHIME_N={dd:[[784,0,1.1,.5],[587,.55,1.8,.5]],up:[[523,0,.9,.45],[659,.4,.9,.45],[784,.8,1.8,.45]],four:[[659,0,.8,.45],[523,.45,.8,.45],[587,.9,.8,.45],[392,1.35,1.9,.45]],soft:[[880,0,2,.35],[1175,.6,2,.3]]};
+function chimeSamples(id){
+  const nn=CHIME_N[id];if(!nn)return null;
+  const R=22050,end=Math.max.apply(null,nn.map(n=>n[1]+n[2])),out=new Float32Array(Math.ceil((end+0.25)*R));
+  nn.forEach(([f,st,d,v])=>{for(let i=0;i<d*R;i++){const t=i/R,ix=Math.floor(st*R)+i;if(ix>=out.length)break;out[ix]+=v*Math.exp(-3.2*t/d)*(Math.sin(2*Math.PI*f*t)+.3*Math.sin(2*Math.PI*f*2.76*t));}});
+  let pk=0;for(let i=0;i<out.length;i++)pk=Math.max(pk,Math.abs(out[i]));if(pk>0)for(let i=0;i<out.length;i++)out[i]*=0.8/pk;
+  return out;
+}
+function withChime(voice,id){
+  const c=chimeSamples(id);if(!c)return voice;
+  const gap=Math.floor(22050*0.25),o=new Float32Array(c.length+gap+voice.length);
+  o.set(c,0);o.set(voice,c.length+gap);return o;
+}
+function fftIP(re,im,inv){
+  const n=re.length;
+  for(let i=1,j=0;i<n;i++){let bit=n>>1;for(;j&bit;bit>>=1)j^=bit;j^=bit;if(i<j){let t=re[i];re[i]=re[j];re[j]=t;t=im[i];im[i]=im[j];im[j]=t;}}
+  for(let len=2;len<=n;len<<=1){
+    const ang=2*Math.PI/len*(inv?-1:1),wr=Math.cos(ang),wi=Math.sin(ang),h=len>>1;
+    for(let i=0;i<n;i+=len){let cr=1,ci=0;for(let j=0;j<h;j++){
+      const a=i+j,b=a+h,vr=re[b]*cr-im[b]*ci,vi=re[b]*ci+im[b]*cr;
+      re[b]=re[a]-vr;im[b]=im[a]-vi;re[a]+=vr;im[a]+=vi;
+      const nc=cr*wr-ci*wi;ci=cr*wi+ci*wr;cr=nc;}}
+  }
+  if(inv){for(let i=0;i<n;i++){re[i]/=n;im[i]/=n;}}
+}
+/* إزالة الضوضاء: طرح طيفي (يقدّر الضوضاء من أهدأ أجزاء التسجيل) */
+function denoise(x,level){
+  level=+level||0;if(!level)return x;
+  const N=512,H=256,n=x.length;if(n<N*4)return x;
+  const al=level===2?2.8:1.6,be=level===2?0.07:0.18,B=N/2+1;
+  const win=new Float32Array(N);for(let i=0;i<N;i++)win[i]=0.5-0.5*Math.cos(2*Math.PI*i/N);
+  const nf=Math.floor((n-N)/H)+1,R=[],I=[],M=[],E=[];
+  for(let f=0;f<nf;f++){
+    const re=new Float32Array(N),im=new Float32Array(N);
+    for(let i=0;i<N;i++)re[i]=x[f*H+i]*win[i];
+    fftIP(re,im,false);
+    const m=new Float32Array(B);let e=0;
+    for(let k=0;k<B;k++){m[k]=Math.hypot(re[k],im[k]);e+=m[k]*m[k];}
+    R.push(re);I.push(im);M.push(m);E.push(e);
+  }
+  const idx=E.map((e,i)=>i).sort((a,b)=>E[a]-E[b]),cnt=Math.max(8,Math.floor(nf*0.12)),noise=new Float32Array(B);
+  for(let c=0;c<cnt;c++){const m=M[idx[c]];for(let k=0;k<B;k++)noise[k]+=m[k]/cnt;}
+  const out=new Float32Array(n);
+  for(let f=0;f<nf;f++){
+    const re=R[f],im=I[f],m=M[f];
+    for(let k=0;k<B;k++){
+      const g=Math.max(be,1-al*noise[k]/(m[k]+1e-9));
+      re[k]*=g;im[k]*=g;if(k>0&&k<N/2){re[N-k]*=g;im[N-k]*=g;}
+    }
+    fftIP(re,im,true);
+    for(let i=0;i<N;i++)out[f*H+i]+=re[i];
+  }
+  return out;
+}
 async function startRecNative(){
   const r=Android.recStart();
   if(r!=='ok')throw new Error('native:'+r);
@@ -1810,8 +1898,20 @@ async function applyFx(data,rate,fx){
   }else node.connect(oc.destination);
   src.start();
   const r=await oc.startRendering();let o=r.getChannelData(0).slice();
-  let a=0,b=o.length-1;const th=.015;while(a<b&&Math.abs(o[a])<th)a++;while(b>a&&Math.abs(o[b])<th)b--;a=Math.max(0,a-Math.floor(OUT*.05));b=Math.min(o.length-1,b+Math.floor(OUT*.15));o=o.slice(a,b+1);
   let pk=0;for(let i=0;i<o.length;i++)pk=Math.max(pk,Math.abs(o[i]));if(pk>0){const g=.9/pk;for(let i=0;i<o.length;i++)o[i]*=g;}
+  /* بوابة ضوضاء: تُسكت ما بين الكلمات وقبل الكلام وبعده */
+  const W=Math.floor(OUT*.01),nw=Math.floor(o.length/W);
+  if(nw>8){
+    const env=new Float32Array(nw);for(let w=0;w<nw;w++){let e=0;for(let i=0;i<W;i++){const v=o[w*W+i];e+=v*v;}env[w]=Math.sqrt(e/W);}
+    const srt=Array.from(env).sort((x,y)=>x-y),fl=srt[Math.floor(nw*.15)],thr=Math.max(fl*3,.06);
+    const open=new Uint8Array(nw);for(let w=0;w<nw;w++)if(env[w]>thr)open[w]=1;
+    const hold=Math.ceil(.12*OUT/W),op2=new Uint8Array(nw);
+    for(let w=0;w<nw;w++)if(open[w])for(let j=Math.max(0,w-3);j<=Math.min(nw-1,w+hold);j++)op2[j]=1;
+    let gn=0;for(let w=0;w<nw;w++){const t=op2[w]?1:0,r=t>gn?.5:.12;gn+=(t-gn)*r;for(let i=0;i<W;i++)o[w*W+i]*=gn;}
+    let f=0,l=nw-1;while(f<nw&&!open[f])f++;while(l>f&&!open[l])l--;
+    if(f<nw){const s0=Math.max(0,(f-4)*W),e0=Math.min(o.length-1,(l+Math.ceil(.15*OUT/W))*W);o=o.slice(s0,e0+1);}
+  }
+  const fi=Math.min(o.length,Math.floor(OUT*.02));for(let i=0;i<fi;i++)o[i]*=i/fi;
   return o;
 }
 function encodeWav(f,rate,padSec){
@@ -1820,30 +1920,59 @@ function encodeWav(f,rate,padSec){
   for(let i=0;i<f.length;i++){const x=Math.max(-1,Math.min(1,f[i]));v.setInt16(44+i*2,x<0?x*0x8000:x*0x7fff,true);}
   return buf;
 }
+function voiceRow(k){
+  const has=!!VOICE[k];
+  return '<div class="vt'+(has?' ok':'')+'"><button class="vtn" data-vr="'+k+'">'+(has?'✓ ':'🎙️ ')+esc(vLabel(k))+'</button>'+(has?'<div class="vta"><button class="btn sec sm" data-vp="'+k+'" aria-label="استمع">▶ استمع</button><button class="btn bad sm" data-vd="'+k+'" aria-label="حذف">✕</button></div>':'')+'</div>';
+}
 function voiceSheet(){
-  const keys=voiceKeys();
-  const el=openSheet('<h2>النطق والأصوات <small style="font-size:12px;color:#b45309">(تجريبي)</small></h2><p class="mut">سجّل صوتك لأي تنبيه. ما لم تسجّله يرنّ بالنغمة التي اخترتها.</p><div>'+keys.map(k=>'<div class="tone"><span class="grow">'+esc(vLabel(k))+(VOICE[k]?' <b style="color:#16a34a">✓</b>':'')+'</span><button class="btn sec sm" data-vr="'+k+'">سجّل</button>'+(VOICE[k]?'<button class="btn sec sm" data-vp="'+k+'">استمع</button><button class="btn bad sm" data-vd="'+k+'">حذف</button>':'')+'</div>').join('')+'</div><div class="acts"><button class="btn ghost full" id="no">إغلاق</button></div>');
+  const keys=voiceKeys(),evs=vEvs();
+  const evh=evs.length?evs.map(e=>'<div class="tone" style="flex-wrap:wrap"><span class="grow"><b>'+esc(e.name)+'</b><br><small class="mut">'+esc(e.date)+' · '+esc(e.time)+'</small>'+(VOICE['x'+e.id]?' <b style="color:#16a34a">✓</b>':'')+'</span><button class="btn sec sm" data-vr="x'+e.id+'">سجّل</button>'+(VOICE['x'+e.id]?'<button class="btn sec sm" data-vp="x'+e.id+'">استمع</button>':'')+'<button class="btn sec sm" data-ve="'+e.id+'">تعديل</button><button class="btn bad sm" data-vx="'+e.id+'">إزالة</button></div>').join(''):'<p class="mut">لا توجد تنبيهات خاصة بعد.</p>';
+  const el=openSheet('<h2>النطق والأصوات <small style="font-size:12px;color:#b45309">(تجريبي)</small></h2><p class="mut">سجّل صوتك لأي تنبيه. ما لم تسجّله يرنّ بالنغمة التي اخترتها.</p><h3 style="margin-top:10px">تنبيهاتي الخاصة</h3><p class="mut">مثل بداية العام الدراسي أو نهايته: تحدّد اسمها وموعدها وتسجّل صوتك، فتنبّهك في وقتها.</p><div>'+evh+'</div><div class="acts"><button class="btn full" id="evAdd">+ إضافة تنبيه خاص</button></div><h3 style="margin-top:14px">تنبيهات الحصص</h3><div class="vgrid">'+keys.map(voiceRow).join('')+'</div><div class="acts"><button class="btn ghost full" id="no">إغلاق</button></div>');
   $('#no',el).onclick=()=>el.close();
+  $('#evAdd',el).onclick=()=>{el.remove();evSheet();};
   el.querySelectorAll('[data-vr]').forEach(b=>b.onclick=()=>{el.remove();recSheet(b.dataset.vr);});
   el.querySelectorAll('[data-vp]').forEach(b=>b.onclick=()=>{try{new Audio(VOICE[b.dataset.vp]).play();}catch(e){}});
+  el.querySelectorAll('[data-ve]').forEach(b=>b.onclick=()=>{el.remove();evSheet(vEvs().find(v=>v.id===b.dataset.ve));});
+  el.querySelectorAll('[data-vx]').forEach(b=>b.onclick=async()=>{const id=b.dataset.vx,e=vEvs().find(v=>v.id===id);if(!(await confirmBox('إزالة التنبيه «'+(e?e.name:'')+'»؟','نعم، أزل',true)))return;S.voiceEv=vEvs().filter(v=>v.id!==id);save();await vDel('x'+id);try{URL.revokeObjectURL(VOICE['x'+id]);}catch(er){}delete VOICE['x'+id];try{window.Android&&Android.removeTone&&Android.removeTone('c_v_x'+id);}catch(er){}try{window.nativeSyncSoon&&nativeSyncSoon();}catch(er){}el.remove();voiceSheet();});
   el.querySelectorAll('[data-vd]').forEach(b=>b.onclick=async()=>{const k=b.dataset.vd;if(!(await confirmBox('حذف تسجيل «'+vLabel(k)+'»؟','نعم، احذف',false)))return;await vDel(k);try{URL.revokeObjectURL(VOICE[k]);}catch(e){}delete VOICE[k];try{window.Android&&Android.removeTone&&Android.removeTone('c_v_'+k);}catch(e){}try{window.nativeSyncSoon&&nativeSyncSoon();}catch(e){}el.remove();voiceSheet();});
 }
+function evSheet(ev){
+  const c=S.cal||{},t0=new Date(),iso0=t0.getFullYear()+'-'+String(t0.getMonth()+1).padStart(2,'0')+'-'+String(t0.getDate()).padStart(2,'0');
+  const L=[['بداية العام الدراسي',c.yStart],['نهاية العام الدراسي',c.yEnd]];
+  (c.hol||[]).forEach(h=>{const nm=h.name||'إجازة';if(h.e&&h.e!==h.s){L.push(['بداية '+nm,h.s]);L.push(['نهاية '+nm,h.e]);}else L.push([nm,h.s]);});
+  const dl=L.filter(x=>x[1]);
+  const chips=dl.map(([n,d])=>'<button class="dchip" data-q="'+esc(n)+'" data-d="'+esc(d)+'"><b>'+esc(n)+'</b><small>'+esc(d)+'</small></button>').join('')+'<button class="dchip" data-q="" data-d="" data-free="1"><b>✏️ إضافة حرة</b><small>اكتب بنفسك</small></button>';
+  const el=openSheet('<h2>'+(ev?'تعديل التنبيه':'تنبيه خاص جديد')+'</h2>'+(ev?'':'<p class="mut">اختر تاريخًا من تواريخك، أو «إضافة حرة»:</p><div class="dgrid">'+chips+'</div>')+'<label class="f" for="evN">الاسم</label><input type="text" id="evN" value="'+esc(ev?ev.name:'')+'" placeholder="مثال: بداية العام الدراسي"><label class="f" for="evD">التاريخ</label><input type="date" id="evD" value="'+esc(ev?ev.date:iso0)+'"><label class="f" for="evT">الوقت</label><input type="time" id="evT" value="'+esc(ev?ev.time:'06:30')+'"><div class="acts"><button class="btn full" id="evS">حفظ</button><button class="btn ghost" id="no">إلغاء</button></div>');
+  el.querySelectorAll('[data-q]').forEach(b=>b.onclick=()=>{el.querySelectorAll('[data-q]').forEach(x=>x.classList.toggle('on',x===b));if(b.dataset.free){$('#evN',el).value='';$('#evD',el).value=iso0;$('#evN',el).focus();return;}$('#evN',el).value=b.dataset.q;if(b.dataset.d)$('#evD',el).value=b.dataset.d;});
+  $('#no',el).onclick=()=>{el.remove();voiceSheet();};
+  $('#evS',el).onclick=()=>{
+    const name=$('#evN',el).value.trim(),date=$('#evD',el).value,time=$('#evT',el).value;
+    if(!name||!date||!time){toast('اكتب الاسم والتاريخ والوقت');return;}
+    if(ev){ev.name=name;ev.date=date;ev.time=time;}else vEvs().push({id:Date.now().toString(36),name,date,time});
+    save();try{window.nativeSyncSoon&&nativeSyncSoon();}catch(e){}toast('تم الحفظ. سجّل صوتك له الآن');el.remove();voiceSheet();
+  };
+}
 function recSheet(k){
-  const el=openSheet('<h2>'+esc(vLabel(k))+'</h2><p class="mut" id="rs">اضغط «ابدأ» ثم تكلّم بصوتك (حتى ٦ ثوانٍ). مثال: «'+esc(vLabel(k))+'».</p><div class="acts"><button class="btn full" id="rb">ابدأ التسجيل</button></div><div id="fxa" style="display:none"><p class="mut">اختر نمط الصوت (اضغط لتسمعه):</p><div id="fxc" style="display:flex;flex-wrap:wrap;gap:8px">'+FX.map(([id,n])=>'<button class="btn sec sm" data-fx="'+id+'">'+n+'</button>').join('')+'</div><div class="acts"><button class="btn full" id="sv" disabled>حفظ هذا الصوت</button><button class="btn ghost" id="rd">إعادة التسجيل</button></div></div><div class="acts"><button class="btn ghost full" id="no">إلغاء</button></div>',{onClose:()=>{try{rec&&rec.stop();}catch(e){}}});
+  let nr=+(localStorage.getItem('tb_nr')||1),curFx='clean',ch=localStorage.getItem('tb_ch')||'none';if(!CHIME_N[ch])ch='none';
+  const el=openSheet('<h2>'+esc(vLabel(k))+'</h2><p class="mut" id="rs">اضغط «ابدأ» ثم تكلّم بصوتك (حتى ٦ ثوانٍ). مثال: «'+esc(vLabel(k))+'».</p><p class="mut" style="margin-bottom:4px">نغمة قبل صوتك (مثل المطار) · اضغط لتسمعها:</p><div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px">'+CHIMES.map(([id,n])=>'<button class="btn sec sm" data-ch="'+id+'">'+n+'</button>').join('')+'</div><div class="acts"><button class="btn full" id="rb">ابدأ التسجيل</button></div><div id="fxa" style="display:none"><p class="mut">إزالة الضوضاء:</p><div style="display:flex;gap:8px;margin-bottom:8px">'+NRL.map(([v,n])=>'<button class="btn sec sm" data-nr="'+v+'">'+n+'</button>').join('')+'</div><p class="mut">نمط الصوت (اضغط لتسمعه):</p><div id="fxc" style="display:flex;flex-wrap:wrap;gap:8px">'+FX.map(([id,n])=>'<button class="btn sec sm" data-fx="'+id+'">'+n+'</button>').join('')+'</div><div class="acts"><button class="btn full" id="sv" disabled>حفظ هذا الصوت</button><button class="btn ghost" id="rd">إعادة التسجيل</button></div></div><div class="acts"><button class="btn ghost full" id="no">إلغاء</button></div>',{onClose:()=>{try{rec&&rec.stop();}catch(e){}}});
   let rec=null,got=null,wav=null,timer=null;
   const rs=$('#rs',el),rb=$('#rb',el);
-  const stop=async()=>{clearTimeout(timer);if(!rec)return;const r0=rec;rec=null;rb.disabled=true;rs.textContent='جارٍ المعالجة…';try{got=await r0.stop();}catch(e){rb.disabled=false;rb.textContent='ابدأ التسجيل';rs.textContent='تعذّر التسجيل: '+(e&&(e.message||e.name)||'');return;}rb.disabled=false;rb.textContent='ابدأ التسجيل';rb.style.display='none';$('#fxa',el).style.display='block';rs.textContent='تم التسجيل. اختر نمطًا واسمعه ثم احفظ.';pick('clean');};
+  const mark=()=>{el.querySelectorAll('[data-nr]').forEach(b=>b.classList.toggle('on',+b.dataset.nr===nr));el.querySelectorAll('[data-fx]').forEach(b=>b.classList.toggle('on',b.dataset.fx===curFx));el.querySelectorAll('[data-ch]').forEach(b=>b.classList.toggle('on',b.dataset.ch===ch));};
+  const stop=async()=>{clearTimeout(timer);if(!rec)return;const r0=rec;rec=null;rb.disabled=true;rs.textContent='جارٍ المعالجة…';try{got=await r0.stop();}catch(e){rb.disabled=false;rb.textContent='ابدأ التسجيل';rs.textContent='تعذّر التسجيل: '+(e&&(e.message||e.name)||'');return;}rb.disabled=false;rb.textContent='ابدأ التسجيل';rb.style.display='none';$('#fxa',el).style.display='block';pick(curFx);};
   const pick=async fx=>{
-    if(!got)return;rs.textContent='جارٍ التجهيز…';
-    try{const o=await applyFx(got.data,got.rate,fx);wav=encodeWav(o,22050,1.5);$('#sv',el).disabled=false;el.querySelectorAll('[data-fx]').forEach(b=>b.classList.toggle('on',b.dataset.fx===fx));rs.textContent='النمط: '+FX.find(x=>x[0]===fx)[1];new Audio(URL.createObjectURL(new Blob([wav],{type:'audio/wav'}))).play();}
+    if(!got)return;curFx=fx;rs.textContent='جارٍ التجهيز…';mark();
+    try{const base=denoise(got.data,nr);const o=await applyFx(base,got.rate,fx);wav=encodeWav(withChime(o,ch),22050,1.5);$('#sv',el).disabled=false;mark();rs.textContent='إزالة الضوضاء: '+NRL[nr][1]+' · النمط: '+FX.find(x=>x[0]===fx)[1]+' · '+CHIMES.find(x=>x[0]===ch)[1];new Audio(URL.createObjectURL(new Blob([wav],{type:'audio/wav'}))).play();}
     catch(e){rs.textContent='تعذّر تجهيز الصوت على هذا الجهاز';}
   };
+  mark();
   rb.onclick=async()=>{
     if(rec){stop();return;}
     try{rec=await startRec();}catch(e){toast('تعذّر الميكروفون: '+((e&&(e.name||e.message))||''));return;}
     rb.textContent='إيقاف التسجيل';rs.textContent='يسجّل الآن… تكلّم';timer=setTimeout(stop,6000);
   };
   el.querySelectorAll('[data-fx]').forEach(b=>b.onclick=()=>pick(b.dataset.fx));
+  el.querySelectorAll('[data-ch]').forEach(b=>b.onclick=()=>{ch=b.dataset.ch;try{localStorage.setItem('tb_ch',ch);}catch(e){}mark();if(got){pick(curFx);}else{const c=chimeSamples(ch);if(c)new Audio(URL.createObjectURL(new Blob([encodeWav(c,22050,0)],{type:'audio/wav'}))).play();}});
+  el.querySelectorAll('[data-nr]').forEach(b=>b.onclick=()=>{nr=+b.dataset.nr;try{localStorage.setItem('tb_nr',nr);}catch(e){}pick(curFx);});
   $('#rd',el).onclick=()=>{got=null;wav=null;$('#fxa',el).style.display='none';rb.style.display='';rs.textContent='اضغط «ابدأ» ثم تكلّم.';};
   $('#sv',el).onclick=async()=>{if(!wav)return;const ok=await vPut(k,wav);if(!ok){toast('تعذّر الحفظ');return;}voiceUse(k,wav);try{window.nativeSyncSoon&&nativeSyncSoon();}catch(e){}toast('تم حفظ صوتك');el.remove();voiceSheet();};
   $('#no',el).onclick=()=>el.close();
@@ -1852,7 +1981,7 @@ window.__ringPicked=function(kind,uri,title){S.alerts['tone'+kind]='sys:'+uri;S.
 function toneOf(k){const a=S.alerts;return (k==='E'?a.toneE:a.toneS)||a.tone||'bell';}
 function toneCardPart(){
   const all=TONES.concat(customTones().map(t=>[t.id,t.name+' (من جهازك)']));
-  const blk=(k,title)=>{const cur=toneOf(k);const sysRow=String(cur).startsWith('sys:')?[[cur,'رنة الجوال: '+esc((S.alerts.sysName||{})[cur.slice(4)]||'مختارة')]]:[];const all2=all.concat(sysRow);const ringBtn=(window.Android&&Android.pickRingtone)?'<button class="btn ghost sm" data-act="ringPick" data-k="'+k+'" style="margin-top:6px">اختر من رنّات الجوال</button>':'';return '<h3 style="margin-top:14px">'+title+'</h3><div class="tones">'+all2.map(([id,n])=>'<div class="tone"><label class="row grow"><input type="radio" name="tone'+k+'" class="toneR" data-k="'+k+'" value="'+esc(id)+'" '+(cur===id?'checked':'')+' style="width:20px;height:20px"> <span>'+esc(n)+'</span></label><button class="btn sec sm" data-act="tonePlay" data-t="'+esc(id)+'">تشغيل</button>'+(String(id).startsWith('c_')?'<button class="btn bad sm" data-act="toneDel" data-t="'+esc(id)+'">حذف</button>':'')+'</div>').join('')+'</div>'+ringBtn;};
+  const blk=(k,title)=>{const cur=toneOf(k);const sysRow=String(cur).startsWith('sys:')?[[cur,'رنة الجوال: '+esc((S.alerts.sysName||{})[cur.slice(4)]||'مختارة')]]:[];const all2=all.concat(sysRow);const ringBtn=(window.Android&&Android.pickRingtone)?'<button class="btn ghost sm" data-act="ringPick" data-k="'+k+'" style="margin-top:6px">اختر من رنّات الجوال</button>':'';return '<h3 style="margin-top:14px">'+title+'</h3><div class="tones">'+all2.map(([id,n])=>'<div class="tc"><label class="tn"><input type="radio" name="tone'+k+'" class="toneR" data-k="'+k+'" value="'+esc(id)+'" '+(cur===id?'checked':'')+'><span class="tnb">'+esc(n)+'</span></label><button class="btn sec sm tpl" data-act="tonePlay" data-t="'+esc(id)+'" aria-label="تشغيل">▶</button>'+(String(id).startsWith('c_')?'<button class="btn bad sm tdl" data-act="toneDel" data-t="'+esc(id)+'">✕</button>':'')+'</div>').join('')+'</div>'+ringBtn;};
   return blk('S','نغمة بداية الحصة')+blk('E','نغمة نهاية الحصة')+'<button class="btn ghost sm" data-act="toneAdd" style="margin-top:6px">+ إضافة نغمة من جهازك</button>';
 }
 function alertsCardHTML(){
@@ -1871,7 +2000,7 @@ function alertsCardHTML(){
     if(hs||he)h+='<span class="adjc">الحصة '+(ORD[p-1]||p)+(hs?' · بداية قبل '+pp.s+' د':'')+(he?' · نهاية قبل '+pp.e+' د':'')+' <button data-act="alpDel" data-p="'+p+'" aria-label="حذف">✕</button></span>';
   }
   h+='<button class="adjb" data-act="alpAdd" aria-label="إضافة حصة بعينها">＋ حصة</button></div>'+
-    '<div class="row" style="margin-top:10px"><button class="btn sec sm" data-act="alTest">اختبار التنبيه</button><button class="btn ghost sm" data-act="alPerm">السماح بإشعارات المتصفح</button></div></div>';
+    '<div class="row" style="margin-top:10px"><button class="btn sec sm" data-act="alTest">اختبار التنبيه</button><button class="btn ghost sm" data-act="alPerm">السماح بإشعارات المتصفح</button></div><button class="btn full" data-act="voiceSheet" style="margin-top:12px">🎙️ تسجيل بصوتي</button></div>';
   return h;
 }
 {const _r0=render;render=function(){const r=_r0.apply(this,arguments);try{applySel();}catch(e){}return r;};}
@@ -1977,7 +2106,7 @@ function renderSched(){
       '<div><label class="f" for="sDur">زمن الحصة (دقيقة)</label><input type="number" id="sDur" value="'+sc.dur+'" min="10" max="120" inputmode="numeric"></div></div>'+
       '<div class="setrow"><div><label class="f" for="sBA">الفسحة بعد الحصة</label><select id="sBA"><option value="0" '+(!sc.brkAfter?'selected':'')+'>بدون فسحة</option>'+opt(sc.periods-1,sc.brkAfter)+'</select></div>'+
       '<div><label class="f" for="sBD">زمن الفسحة (دقيقة)</label><input type="number" id="sBD" value="'+sc.brkDur+'" min="5" max="60" inputmode="numeric"></div></div>'+
-      '</div><div class="card"><h3>عدد الحصص كل يوم</h3><p class="mut" style="margin:0 0 6px">اختر عدد حصص كل يوم.</p><div class="dnl">'+['كل الأيام'].concat(sc.days).map(d=>'<div class="dnr'+(d==='كل الأيام'?' all':'')+'"><b>'+d+'</b><button class="dnb" data-act="dayN" data-d="'+d+'" data-k="-1" aria-label="حذف حصة من '+d+'">−</button><span class="dnn">'+(d==='كل الأيام'?'':dayCount(sc,d))+'</span><button class="dnb" data-act="dayN" data-d="'+d+'" data-k="1" aria-label="إضافة حصة إلى '+d+'">＋</button></div>').join('')+'</div>'+
+      '</div><div class="card"><h3>عدد الحصص كل يوم</h3><p class="mut" style="margin:0 0 6px">اختر عدد حصص كل يوم.</p><div class="dnl">'+sc.days.map(d=>'<div class="dnr'+(d==='كل الأيام'?' all':'')+'"><b>'+d+'</b><button class="dnb" data-act="dayN" data-d="'+d+'" data-k="-1" aria-label="حذف حصة من '+d+'">−</button><span class="dnn">'+(d==='كل الأيام'?'':dayCount(sc,d))+'</span><button class="dnb" data-act="dayN" data-d="'+d+'" data-k="1" aria-label="إضافة حصة إلى '+d+'">＋</button></div>').join('')+'</div>'+
       '</div><div class="card"><h3>تخفيض أو زيادة زمن الحصة</h3><p class="mut" style="margin:0 0 6px">قصّر أو أطل حصة في يوم معين (الانصراف أو البداية).</p><div class="adjl">'+(sc.adj||[]).map(a=>'<span class="adjc">'+(a.d?a.d+' · ':'كل الأيام · ')+'الحصة '+(ORD[a.p-1]||a.p)+' · '+(a.side==='b'?'البداية ':'الانصراف ')+(a.sign>0?'زائد ':'ناقص ')+a.min+' د <button data-act="adjDel" data-i="'+a.id+'" aria-label="حذف">✕</button></span>').join('')+'<button class="adjb" data-act="adjAdd" aria-label="إضافة تعديل زمن">⏱ +</button></div></div>';
   }
   const nowP=(()=>{const l=liveInfo().lesson;return l&&l.tag==='الآن'?l.p:0;})(),nowB=(()=>{const i=liveInfo();return i.s==='بداية الفسحة'&&sc.days.includes(JSDAY[new Date().getDay()]);})();
