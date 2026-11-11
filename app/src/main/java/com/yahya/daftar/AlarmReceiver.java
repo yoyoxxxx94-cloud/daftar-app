@@ -13,12 +13,14 @@ public class AlarmReceiver extends BroadcastReceiver {
         String id = in.getStringExtra("id");
         String title = in.getStringExtra("title");
         String body = in.getStringExtra("body");
+        String meta = in.getStringExtra("meta");
         if (id != null) AlarmScheduler.forget(c, id);
 
         Intent s = new Intent(c, AlarmService.class)
                 .setAction(AlarmService.ACTION_START)
                 .putExtra("title", title)
-                .putExtra("body", body);
+                .putExtra("body", body)
+                .putExtra("meta", meta == null ? "" : meta);
         try {
             ContextCompat.startForegroundService(c, s);
         } catch (Exception e) {

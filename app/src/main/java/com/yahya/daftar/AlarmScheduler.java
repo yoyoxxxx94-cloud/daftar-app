@@ -38,19 +38,20 @@ public final class AlarmScheduler {
         c.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().putString(KEY, o.toString()).commit();
     }
 
-    private static PendingIntent pi(Context c, String id, String title, String body, int flags) {
+    private static PendingIntent pi(Context c, String id, String title, String body, String meta, int flags) {
         Intent i = new Intent(c, AlarmReceiver.class)
                 .setAction(ACTION_FIRE)
                 .setData(Uri.parse("daftar://alarm/" + Uri.encode(id)));
         i.putExtra("id", id);
         i.putExtra("title", title);
         i.putExtra("body", body);
+        i.putExtra("meta", meta == null ? "" : meta);
         return PendingIntent.getBroadcast(c, id.hashCode(), i, flags | PendingIntent.FLAG_IMMUTABLE);
     }
 
-    private static void arm(Context c, String id, long at, String title, String body) {
+    private static void arm(Context c, String id, long at, String title, String body, String meta) {
         AlarmManager am = (AlarmManager) c.getSystemService(Context.ALARM_SERVICE);
-        PendingIntent p = pi(c, id, title, body, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent p = pi(c, id, title, body, meta, PendingIntent.FLAG_UPDATE_CURRENT);
         try {
             if (Build.VERSION.SDK_INT >= 31 && !am.canScheduleExactAlarms()) {
                 am.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, at, p);
@@ -64,7 +65,7 @@ public final class AlarmScheduler {
 
     private static void disarm(Context c, String id) {
         AlarmManager am = (AlarmManager) c.getSystemService(Context.ALARM_SERVICE);
-        PendingIntent p = pi(c, id, "", "", PendingIntent.FLAG_NO_CREATE);
+        PendingIntent p = pi(c, id, "", "", "", PendingIntent.FLAG_NO_CREATE);
         if (p != null) {
             am.cancel(p);
             p.cancel();
@@ -73,6 +74,10 @@ public final class AlarmScheduler {
 
     /** ضبط تنبيه واحد (يستبدل أي تنبيه بنفس المعرّف). */
     public static void set(Context c, String id, long at, String title, String body) {
+        set(c, id, at, title, body, "");
+    }
+
+    public static void set(Context c, String id, long at, String title, String body, String meta) {
         if (id == null || id.isEmpty()) return;
         if (at <= System.currentTimeMillis()) {
             cancel(c, id);
@@ -80,11 +85,11 @@ public final class AlarmScheduler {
         }
         JSONObject all = load(c);
         try {
-            all.put(id, new JSONObject().put("at", at).put("title", title).put("body", body));
+            all.put(id, new JSONObject().put("at", at).put("title", title).put("body", body).put("meta", meta == null ? "" : meta));
         } catch (Exception ignored) {
         }
         store(c, all);
-        arm(c, id, at, title, body);
+        arm(c, id, at, title, body, meta);
     }
 
     public static void cancel(Context c, String id) {
@@ -115,7 +120,7 @@ public final class AlarmScheduler {
                 JSONObject o = arr.getJSONObject(i);
                 long at = (long) o.getDouble("at");
                 if (at <= now) continue;
-                set(c, o.getString("id"), at, o.optString("title", "تنبيه"), o.optString("body", ""));
+                set(c, o.getString("id"), at, o.optString("title", "تنبيه"), o.optString("body", ""), o.optString("meta", ""));
                 n++;
             }
         } catch (Exception ignored) {
@@ -145,7 +150,7 @@ public final class AlarmScheduler {
             }
             long at = o.optLong("at", 0);
             if (at > now) {
-                arm(c, id, at, o.optString("title"), o.optString("body"));
+                arm(c, id, at, o.optString("title"), o.optString("body"), o.optString("meta"));
             } else {
                 all.remove(id);
             }
