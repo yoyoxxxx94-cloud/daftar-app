@@ -47,6 +47,76 @@ public class NativeBridge {
     }
 
     @JavascriptInterface
+    public void setAlarmMeta(String id, double atMillis, String title, String body, String meta) {
+        AlarmScheduler.set(app, id, (long) atMillis, title, body, meta);
+    }
+
+    /** يحفظ نغمة من جهاز المستخدم ليشغّلها التنبيه الحقيقي. */
+    @JavascriptInterface
+    public boolean storeTone(String id, String b64) {
+        try {
+            byte[] data = Base64.decode(b64, Base64.DEFAULT);
+            java.io.File dir = new java.io.File(app.getFilesDir(), "tones");
+            if (!dir.exists()) dir.mkdirs();
+            java.io.FileOutputStream os = new java.io.FileOutputStream(new java.io.File(dir, id.replaceAll("[^A-Za-z0-9_]", "_")));
+            os.write(data);
+            os.close();
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    @JavascriptInterface
+    public boolean removeTone(String id) {
+        try {
+            return new java.io.File(new java.io.File(app.getFilesDir(), "tones"), id.replaceAll("[^A-Za-z0-9_]", "_")).delete();
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    @JavascriptInterface
+    public void pickRingtone(final String kind) {
+        act.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                act.pickRingtone(kind);
+            }
+        });
+    }
+
+    @JavascriptInterface
+    public void previewRingtone(final String uri) {
+        act.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                act.previewRingtone(uri);
+            }
+        });
+    }
+
+    @JavascriptInterface
+    public void startListening(final String lang) {
+        act.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                act.startListen(lang);
+            }
+        });
+    }
+
+    @JavascriptInterface
+    public void stopListening() {
+        act.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                act.stopListen();
+            }
+        });
+    }
+
+    @JavascriptInterface
     public void cancelAlarm(String id) {
         AlarmScheduler.cancel(app, id);
     }
@@ -106,6 +176,22 @@ public class NativeBridge {
     }
 
     /** يحفظ ملفًا (base64): الصور في المعرض، والباقي في التنزيلات. يعيد "ok" أو نصًا فارغًا عند الفشل. */
+    @JavascriptInterface
+    public boolean saveFileAs(final String b64, final String name, final String mime) {
+        try {
+            final byte[] data = Base64.decode(b64, Base64.DEFAULT);
+            act.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    act.startSaveAs(data, safeName(name), mime);
+                }
+            });
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
     @JavascriptInterface
     public String saveFile(String b64, String name, String mime) {
         try {

@@ -35,6 +35,16 @@ public class MainActivity extends Activity {
     private static final int REQ_FSI = 14;
     private static final int REQ_BATT = 15;
     private static final int REQ_EXACT = 16;
+    private static final int REQ_SAVEAS = 17;
+    private static final int REQ_AUDIO = 18;
+    private static final int REQ_MIC = 19;
+    private static final int REQ_RING = 20;
+    private String ringKind = "S";
+    private android.webkit.PermissionRequest pendingPerm;
+    private android.media.Ringtone previewing;
+    private android.speech.SpeechRecognizer sr;
+    private String pendingLang = "ar-SA";
+    private byte[] pendingSave;
 
     private WebView web;
     private ValueCallback<Uri[]> filePathCb;
@@ -85,6 +95,22 @@ public class MainActivity extends Activity {
 
         web.setWebChromeClient(new WebChromeClient() {
             @Override
+            public void onPermissionRequest(final android.webkit.PermissionRequest req) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (android.os.Build.VERSION.SDK_INT >= 23
+                                && checkSelfPermission(android.Manifest.permission.RECORD_AUDIO) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+                            pendingPerm = req;
+                            requestPermissions(new String[]{android.Manifest.permission.RECORD_AUDIO}, REQ_MIC);
+                        } else {
+                            req.grant(req.getResources());
+                        }
+                    }
+                });
+            }
+
+            @Override
             public boolean onShowFileChooser(WebView v, ValueCallback<Uri[]> cb, FileChooserParams p) {
                 if (filePathCb != null) filePathCb.onReceiveValue(null);
                 filePathCb = cb;
@@ -133,6 +159,114 @@ public class MainActivity extends Activity {
         super.onDestroy();
     }
 
+    private void jsCall(final String js) {
+        web.post(new Runnable() {
+            @Override
+            public void run() {
+                web.evaluateJavascript(js, null);
+            }
+        });
+    }
+
+    void pickRingtone(String kind) {
+        ringKind = kind;
+        try {
+            Intent i = new Intent(android.media.RingtoneManager.ACTION_RINGTONE_PICKER);
+            i.putExtra(android.media.RingtoneManager.EXTRA_RINGTONE_TYPE, android.media.RingtoneManager.TYPE_ALL);
+            i.putExtra(android.media.RingtoneManager.EXTRA_RINGTONE_SHOW_SILENT, false);
+            i.putExtra(android.media.RingtoneManager.EXTRA_RINGTONE_SHOW_DEFAULT, true);
+            startActivityForResult(i, REQ_RING);
+        } catch (Exception e) {
+            jsCall("window.toast&&toast('تعذّر فتح قائمة الرنّات')");
+        }
+    }
+
+    void previewRingtone(String uri) {
+        try {
+            if (previewing != null) previewing.stop();
+            previewing = android.media.RingtoneManager.getRingtone(this, Uri.parse(uri));
+            if (previewing != null) previewing.play();
+        } catch (Exception ignored) {
+        }
+    }
+
+    /** إملاء صوتي بمحرك التعرف على الكلام في أندرويد. */
+    void startListen(String lang) {
+        pendingLang = (lang == null || lang.isEmpty()) ? "ar-SA" : lang;
+        if (android.os.Build.VERSION.SDK_INT >= 23
+                && checkSelfPermission(android.Manifest.permission.RECORD_AUDIO) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{android.Manifest.permission.RECORD_AUDIO}, REQ_AUDIO);
+            return;
+        }
+        if (!android.speech.SpeechRecognizer.isRecognitionAvailable(this)) {
+            jsCall("window.__spErr&&window.__spErr('unavailable')");
+            return;
+        }
+        stopListen();
+        sr = android.speech.SpeechRecognizer.createSpeechRecognizer(this);
+        sr.setRecognitionListener(new android.speech.RecognitionListener() {
+            @Override public void onReadyForSpeech(Bundle p) { }
+            @Override public void onBeginningOfSpeech() { }
+            @Override public void onRmsChanged(float v) { }
+            @Override public void onBufferReceived(byte[] b) { }
+            @Override public void onEndOfSpeech() { }
+            @Override public void onEvent(int t, Bundle b) { }
+
+            @Override
+            public void onPartialResults(Bundle b) {
+                java.util.ArrayList<String> l = b.getStringArrayList(android.speech.SpeechRecognizer.RESULTS_RECOGNITION);
+                if (l != null && !l.isEmpty()) {
+                    jsCall("window.__spRes&&window.__spRes(" + org.json.JSONObject.quote(l.get(0)) + ",false)");
+                }
+            }
+
+            @Override
+            public void onResults(Bundle b) {
+                java.util.ArrayList<String> l = b.getStringArrayList(android.speech.SpeechRecognizer.RESULTS_RECOGNITION);
+                if (l != null && !l.isEmpty()) {
+                    jsCall("window.__spRes&&window.__spRes(" + org.json.JSONObject.quote(l.get(0)) + ",true)");
+                }
+                jsCall("window.__spEnd&&window.__spEnd()");
+            }
+
+            @Override
+            public void onError(int code) {
+                if (code == android.speech.SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS) {
+                    jsCall("window.__spErr&&window.__spErr('not-allowed')");
+                } else {
+                    jsCall("window.__spEnd&&window.__spEnd()");
+                }
+            }
+        });
+        Intent i = new Intent(android.speech.RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        i.putExtra(android.speech.RecognizerIntent.EXTRA_LANGUAGE_MODEL, android.speech.RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        i.putExtra(android.speech.RecognizerIntent.EXTRA_LANGUAGE, pendingLang);
+        i.putExtra(android.speech.RecognizerIntent.EXTRA_PARTIAL_RESULTS, true);
+        i.putExtra(android.speech.RecognizerIntent.EXTRA_MAX_RESULTS, 1);
+        sr.startListening(i);
+    }
+
+    void stopListen() {
+        if (sr != null) {
+            try {
+                sr.cancel();
+                sr.destroy();
+            } catch (Exception ignored) {
+            }
+            sr = null;
+        }
+    }
+
+    /** نافذة «حفظ باسم»: يختار المستخدم المجلد والاسم بنفسه. */
+    void startSaveAs(byte[] data, String name, String mime) {
+        pendingSave = data;
+        Intent i = new Intent(Intent.ACTION_CREATE_DOCUMENT);
+        i.addCategory(Intent.CATEGORY_OPENABLE);
+        i.setType(mime == null || mime.isEmpty() ? "application/octet-stream" : mime);
+        i.putExtra(Intent.EXTRA_TITLE, name);
+        startActivityForResult(i, REQ_SAVEAS);
+    }
+
     // ---------- اختيار الملفات (استيراد النسخ الاحتياطية والصور) ----------
 
     @Override
@@ -146,6 +280,42 @@ public class MainActivity extends Activity {
             }
             filePathCb.onReceiveValue(r);
             filePathCb = null;
+        } else if (req == REQ_RING) {
+            if (res == RESULT_OK && data != null) {
+                Uri u = data.getParcelableExtra(android.media.RingtoneManager.EXTRA_RINGTONE_PICKED_URI);
+                if (u != null) {
+                    String title = "";
+                    try {
+                        android.media.Ringtone r = android.media.RingtoneManager.getRingtone(this, u);
+                        if (r != null) title = r.getTitle(this);
+                    } catch (Exception ignored) {
+                    }
+                    jsCall("window.__ringPicked&&__ringPicked(" + org.json.JSONObject.quote(ringKind) + ","
+                            + org.json.JSONObject.quote(u.toString()) + "," + org.json.JSONObject.quote(title) + ")");
+                }
+            }
+        } else if (req == REQ_SAVEAS) {
+            boolean ok = false;
+            if (res == RESULT_OK && data != null && data.getData() != null && pendingSave != null) {
+                try {
+                    java.io.OutputStream os = getContentResolver().openOutputStream(data.getData(), "wt");
+                    if (os != null) {
+                        os.write(pendingSave);
+                        os.close();
+                        ok = true;
+                    }
+                } catch (Exception e) {
+                    ok = false;
+                }
+            }
+            pendingSave = null;
+            final String js = "window.__fsDone&&window.__fsDone(" + (ok ? "true" : "false") + ")";
+            web.post(new Runnable() {
+                @Override
+                public void run() {
+                    web.evaluateJavascript(js, null);
+                }
+            });
         } else if (req == REQ_FSI) {
             stepBattery();
         } else if (req == REQ_BATT || req == REQ_EXACT) {
@@ -184,6 +354,19 @@ public class MainActivity extends Activity {
         super.onRequestPermissionsResult(code, perms, results);
         if (code == REQ_STORAGE) stepNotifications();
         else if (code == REQ_NOTIF) stepExact();
+        else if (code == REQ_MIC) {
+            if (pendingPerm != null) {
+                if (results.length > 0 && results[0] == android.content.pm.PackageManager.PERMISSION_GRANTED) pendingPerm.grant(pendingPerm.getResources());
+                else pendingPerm.deny();
+                pendingPerm = null;
+            }
+        } else if (code == REQ_AUDIO) {
+            if (results.length > 0 && results[0] == android.content.pm.PackageManager.PERMISSION_GRANTED) {
+                startListen(pendingLang);
+            } else {
+                jsCall("window.__spErr&&window.__spErr('not-allowed')");
+            }
+        }
     }
 
     private boolean shouldAsk(String key) {
