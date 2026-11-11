@@ -162,7 +162,9 @@ table.tb{border-collapse:separate;border-spacing:0;min-width:100%}
 .tb td.cell.lo button{color:var(--warn)}
 .tb tr:nth-child(even) td.nm{background:color-mix(in srgb,var(--card) 92%,var(--pri))}
 .hrow2{display:flex;align-items:center;gap:8px;min-height:36px}.hrow2 .np{flex:1;min-width:0}
-.fsb{flex:none;background:var(--pri-soft);color:var(--pri);border-radius:999px;padding:2px 10px;font-weight:800;font-size:12px;min-height:26px}
+.fsb.fadd{background:#ccfbf1;color:#0f5c63;border:1.5px solid #0f5c63}.sdt.today{background:#fef3c7;color:#92400e;border:1.5px solid #f59e0b;font-weight:800;font-size:14px;padding:8px 12px}tr.selrow>td:first-child,tr.selrow>th:first-child{background:#d1d5db!important;box-shadow:inset 0 0 0 2px #6b7280}td.selhi{background:#e5e7eb!important;box-shadow:inset 0 0 0 3px #6b7280;transition:background .2s}
+.mcard{border:1px solid color-mix(in srgb,var(--c) 22%,transparent)!important;background:color-mix(in srgb,var(--c) 5%,var(--card))!important;border-radius:18px!important}.mcard h3{display:flex;align-items:center;gap:10px;margin-top:0}.mic{flex:none;width:42px;height:42px;border-radius:14px;background:var(--c);color:#fff;display:inline-flex;align-items:center;justify-content:center}.mcard .btn.sec{background:color-mix(in srgb,var(--c) 10%,var(--card));color:var(--c);border-color:color-mix(in srgb,var(--c) 25%,transparent)}
+.sopt{display:flex;align-items:center;gap:12px;width:100%;padding:12px;border-radius:14px;border:2px solid #d6dde0;background:#fff;color:#1f2937;text-align:start;margin-top:8px;font:inherit}.sopt .sic{flex:none;width:44px;height:44px;border-radius:12px;background:#eef3f4;color:#0f5c63;display:flex;align-items:center;justify-content:center}.sopt .stx{flex:1;display:flex;flex-direction:column;gap:2px}.sopt .stx b{font-size:15px}.sopt .stx small{font-size:12px;color:#6b7280;line-height:1.5}.sopt .sok{flex:none;font-size:12px;font-weight:800;color:#166534}.sopt.on{background:#dcfce7;border-color:#16a34a}.sopt.on .sic{background:#16a34a;color:#fff}.nowdot.brkdot{position:static;display:block;width:6px;height:6px;margin:5px auto 0}.nowdot{position:absolute;top:3px;inset-inline-end:3px;width:8px;height:8px;border-radius:50%;background:#dc2626;pointer-events:none;animation:nowp 1.2s ease-in-out infinite}@keyframes nowp{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.5);opacity:.45}}.fill,.emp{position:relative}.pinin{text-align:center;font-size:28px;letter-spacing:12px;direction:ltr}.fsb{flex:none;background:var(--pri-soft);color:var(--pri);border-radius:999px;padding:2px 10px;font-weight:800;font-size:12px;min-height:26px}
 .logo{flex:none;display:flex;flex-direction:column;align-items:flex-start;line-height:1.1;width:92px}
 .lg{font-size:14px;font-weight:800;background:linear-gradient(120deg,#9a6a12,#e8b830 45%,#b8860b 75%,#f3d36b);-webkit-background-clip:text;background-clip:text;color:transparent;white-space:nowrap}
 .ym{direction:ltr;width:100%;overflow:hidden;white-space:nowrap;height:17px}
@@ -396,15 +398,22 @@ function fixCols(b){
 }
 const locNo=(b,c)=>b.cols.filter(x=>x.term===c.term&&x.per===c.per).indexOf(c)+1;
 const secTag=c=>'ف'+c.term+' · ت'+c.per;
-const arKey=n=>String(n).replace(/[\u064B-\u0652\u0640]/g,'').replace(/[أإآٱ]/g,'ا').replace(/ى/g,'ي').replace(/ة/g,'ه').replace(/ؤ/g,'و').replace(/ئ/g,'ي').trim();
+const arKey=n=>String(n).replace(/[\u064B-\u0652\u0640]/g,'').replace(/[أإآٱ]/g,'ا').replace(/ى/g,'ي').replace(/ة/g,'ه').replace(/[ؤئ]/g,'ء').trim();
 const COL=(()=>{try{return new Intl.Collator('ar',{sensitivity:'base'});}catch(e){return null;}})();
-const cmpAr=(a,b)=>COL?COL.compare(arKey(a),arKey(b)):(arKey(a)<arKey(b)?-1:1);
-function sortAlpha(b){b.students.sort((x,y)=>cmpAr(x.name,y.name));}
+const ABJ='ءابتثجحخدذرزسشصضطظعغفقكلمنهوي',abj=c=>{const i=ABJ.indexOf(c);return i<0?100+c.charCodeAt(0):i;};
+const cmpAr=(a,b)=>{const x=arKey(a),y=arKey(b),n=Math.min(x.length,y.length);for(let i=0;i<n;i++){const p=x[i],q=y[i];if(p!==q){if(p===' ')return -1;if(q===' ')return 1;return abj(p)-abj(q);}}return x.length-y.length;};
+function ensureOrig(b){
+  const st=b.students||[];let m=0;st.forEach(x=>{if(typeof x.o==='number'&&x.o>m)m=x.o;});
+  st.forEach(x=>{if(typeof x.o!=='number')x.o=++m;});
+}
+function sortAlpha(b){ensureOrig(b);b.students.sort((x,y)=>cmpAr(x.name,y.name));}
+function sortOrig(b){ensureOrig(b);b.students.sort((x,y)=>x.o-y.o);}
 const nkey=n=>String(n||'').replace(/[\u064B-\u0652\u0640]/g,'').replace(/[أإآ]/g,'ا').replace(/ة/g,'ه').replace(/ى/g,'ي').replace(/\s+/g,' ').trim();
 function dupIdx(b,name,exceptId){const k=nkey(name);return k?b.students.findIndex(s=>s.id!==exceptId&&nkey(s.name)===k):-1;}
 const DUPMSG='اسم مكرر — أضف اسمًا ثالثًا أو علامة للتمييز';
 function addByMode(b,name){
-  const st={id:uid(),name};
+  ensureOrig(b);
+  const st={id:uid(),name,o:b.students.reduce((m,x)=>Math.max(m,x.o||0),0)+1};
   if(b.addAlpha===false)b.students.push(st);
   else{let i=b.students.findIndex(x=>cmpAr(x.name,name)>0);if(i<0)i=b.students.length;b.students.splice(i,0,st);}
   return st;
@@ -473,11 +482,12 @@ function normalize(s){
   s.lists=Object.assign(d.lists,s.lists||{});
   s.sched=Object.assign({days:d.sched.days,periods:6,dayPeriods:{},cells:{},locked:false,start:'07:00',dur:45,brkAfter:3,brkDur:20,adj:[]},s.sched||{});
   s.books=s.books||{};
-  s.cal=Object.assign({yStart:'',yEnd:'',hol:[]},s.cal||{});
+  s.cal=Object.assign({yStart:'',yEnd:'',hol:[],wkAdj:0},s.cal||{});
   s.alerts=Object.assign({on:true,sMin:0,eMin:2,per:{},tone:'bell'},s.alerts||{});
   s.backup=Object.assign({last:'',remind:true,time:'14:00'},s.backup||{});
   thxFix(s);
   s.order=(s.order||Object.keys(s.books)).filter(id=>s.books[id]);
+  if(s.order.length>1){const emp=s.order.filter(id=>{const b=s.books[id];return b&&!b.demo&&b.name==='دفتر المتابعة'&&!(b.students||[]).length&&!(b.cols||[]).length&&!(b.noor||[]).length;});if(emp.length&&emp.length<s.order.length){emp.forEach(id=>delete s.books[id]);s.order=s.order.filter(id=>s.books[id]);}}
   if(!s.order.length){const b=newBook('دفتر المتابعة');s.books[b.id]=b;s.order=[b.id];}
   if(!s.books[s.cur])s.cur=s.order[0];
   for(const id of s.order){const b=s.books[id];b.id=id;b.max=b.max||10;b.hdr=Object.assign({start:'',end:'',week:1,date:''},b.hdr||{});b.students=b.students||[];b.cols=b.cols||[];fixCols(b);b.scores=b.scores||{};b.prev=b.prev||{};for(const k of Object.keys(b.prev)){if(!Array.isArray(b.prev[k]))b.prev[k]=[b.prev[k]];}}
@@ -513,7 +523,7 @@ function ago(iso){
   if(n===0)return 'اليوم';if(n===1)return 'أمس';if(n<7)return 'قبل '+n+' أيام';if(n<30){const w=Math.round(n/7);return w===1?'قبل أسبوع':w===2?'قبل أسبوعين':'قبل '+w+' أسابيع';}
   const m=Math.round(n/30);return m===1?'قبل شهر':m===2?'قبل شهرين':'قبل '+m+' أشهر';
 }
-function dateLine(iso){return iso?'<div class="sdt">📅 وُضعت الدرجة: <b>'+esc(dateInfo(iso).day+' '+dateInfo(iso).g)+'</b> · '+ago(iso)+'</div>':'<div class="sdt">📅 تاريخ الدرجة: غير مسجّل (درجة قديمة)</div>';}
+function dateLine(iso){return iso&&iso===isoToday()?'<div class="sdt today" role="alert">⚠ هذه الدرجة وُضعت اليوم — تأكد قبل أن تعدّلها أو تكررها</div>':iso?'<div class="sdt">📅 وُضعت الدرجة: <b>'+esc(dateInfo(iso).day+' '+dateInfo(iso).g)+'</b> · '+ago(iso)+'</div>':'<div class="sdt">📅 تاريخ الدرجة: غير مسجّل (درجة قديمة)</div>';}
 const prevMax=()=>Math.max(3,Math.min(8,Math.round(+(S.settings&&S.settings.prevMax)||3)));
 function prevHTML(b,key){const pl=prevList(b,key).slice(-prevMax());
   return pl.length?'<span class="pv pr n'+Math.min(pl.length,7)+'" title="تغييرات سابقة">'+pl.map((t,i)=>'<i'+(i===pl.length-1?' class="lastp"':'')+'>'+esc(t)+'</i>').join('')+'</span>':'';}
@@ -548,6 +558,7 @@ function undoBar(show){let b=$('#undoBar');if(!b){b=document.createElement('div'
 function undoHook(){if(TAB!=='sched'||SNAP===null)return;const now=schedSlice();if(now===SNAP)return;if(!UNDOBASE)UNDOBASE=SNAP;SNAP=now;undoBar(true);clearTimeout(UNDOT);UNDOT=setTimeout(()=>{UNDOBASE=null;undoBar(false);},7000);}
 function save(){
   try{undoHook();}catch(e){}
+  try{for(const k of Object.keys(S.books))ensureOrig(S.books[k]);}catch(e){}
   try{refreshDots();}catch(e){}
   try{localStorage.setItem('tb_state',JSON.stringify(S));}catch(e){}
   clearTimeout(saveT);saveT=setTimeout(dbFlush,700);
@@ -634,6 +645,12 @@ function askText({title,value='',ok='حفظ',placeholder='',multi=false,note='',
     if(!multi)q.onkeydown=e=>{if(e.key==='Enter')$('#ok',el).click();};
   });
 }
+async function strongDelete(msg){
+  if(!(await confirmBox('(١ من ٣) '+msg,'نعم، احذف')))return false;
+  if(!(await confirmBox('(٢ من ٣) هل أنت متأكد؟ '+msg,'نعم، احذف')))return false;
+  if(!(await confirmBox('(٣ من ٣) تأكيد أخير: '+msg+' لا يمكن التراجع.','احذف نهائيًا')))return false;
+  return await codeConfirm();
+}
 async function confirmDelete(msg){
   if(!(await confirmBox(msg,'نعم، احذف')))return false;
   return await confirmBox('تأكيد الحذف مرة ثانية: '+msg+' لا يمكن التراجع.','احذف نهائيًا');
@@ -688,6 +705,22 @@ function mnhFit(){
 }
 if(window.visualViewport){visualViewport.addEventListener('resize',mnhFit);visualViewport.addEventListener('scroll',mnhFit);}
 const TABS=[['track','متابعة'],['sched','الجدول'],['thanks','رسائل الشكر'],['mnh','منهجي'],['more','المزيد']];
+const SELH={};
+function applySel(){
+  document.querySelectorAll('.selhi').forEach(x=>x.classList.remove('selhi'));
+  document.querySelectorAll('.selrow').forEach(x=>x.classList.remove('selrow'));
+  const ks=Object.keys(SELH);if(!ks.length)return;
+  document.querySelectorAll('button[data-act="cell"],button[data-act="nCell"]').forEach(bt=>{
+    const k=bt.dataset.sid+'|'+(bt.dataset.cid||bt.dataset.nid);
+    if(SELH[k]){const td=bt.closest('td'),tr=bt.closest('tr');if(td)td.classList.add('selhi');if(tr)tr.classList.add('selrow');}
+  });
+}
+function markSel(sid,id){SELH[sid+'|'+id]={exp:Date.now()+5000};applySel();}
+setInterval(()=>{
+  const now=Date.now(),open=!!document.querySelector('.ov');let ch=false;
+  Object.keys(SELH).forEach(k=>{if(open)SELH[k].exp=now+5000;else if(now>SELH[k].exp){delete SELH[k];ch=true;}});
+  if(ch)applySel();
+},400);
 function render(){
   if(TAB!=='track')SUMPICK=null;
   if(purgePrev())save();
@@ -773,7 +806,7 @@ function renderTrack(){
   const old=$('#scr');const pos=old?{l:old.scrollLeft,t:old.scrollTop}:null;
   const di=dateInfo(b.hdr.date);
   m.innerHTML=
-   '<section class="hdr"><div class="hrow2">'+LOGO+''+(/^دفتر\s*(ال)?متابعة$/.test(b.name.trim())?'<span class="np"></span>':'<button class="np" data-act="books">'+esc(b.name)+'</button>')+(FULL?'<button class="fsb" data-act="full">⤢ استرجاع</button>':'<button class="fsb" data-act="full" aria-label="شاشة كاملة">⛶ شاشة كاملة</button>')+'<button class="fsb" data-act="shareSheet" aria-label="تصدير واستيراد">⇅ تصدير واستيراد</button></div>'+bookBar()+'<div class="hrest"><div id="live">'+liveHTML()+'</div>'+
+   '<section class="hdr"><div class="hrow2">'+LOGO+''+(/^دفتر\s*(ال)?متابعة$/.test(b.name.trim())?'<span class="np"></span>':'<button class="np" data-act="books">'+esc(b.name)+'</button>')+(FULL?'<button class="fsb" data-act="full">⤢ استرجاع</button>':'<button class="fsb" data-act="full" aria-label="شاشة كاملة">⛶ شاشة كاملة</button>')+'<button class="fsb fadd" data-act="addTerm" aria-label="إضافة وحذف">＋ − إضافة وحذف</button></div>'+bookBar()+'<div class="hrest"><div id="live">'+liveHTML()+'</div>'+
    '<div class="drow">'+
    '<button class="dtx" data-act="pickDate">'+esc(di.day)+' · '+esc(di.h)+' · '+esc(di.g)+'</button></div></div></section>'+
    (MARK!==null?'<div class="sumbar mkbar"><span>اضغط على رقم المهارة ثم اختر لونها</span><span class="sw">'+MCOLS.map((c,i)=>'<button data-act="mkCol" data-i="'+i+'" aria-label="'+c[1]+'" aria-pressed="'+(i===MARK)+'" style="background:'+c[0]+'"></button>').join('')+'</span><button data-act="markDone">تم</button></div>':'')+
@@ -807,7 +840,7 @@ function bookChipLabel(nm){const i=nm.indexOf(' – ');return i>0?{sub:nm.slice(
 function bookBar(){
   const L=liveInfo(),run=L.lesson&&L.lesson.tag==='الآن'?bookForLesson(L.lesson.c):null;
   return '<div class="bkbar">'+S.order.map(id=>{const l=bookChipLabel(S.books[id].name);
-    return '<button class="bkc'+(id===S.cur?' on':'')+(id===run?' run':'')+'" data-act="bookGo" data-id="'+id+'"><b>'+esc(l.sub)+'</b>'+(l.cls?'<small>'+esc(l.cls)+'</small>':'')+'</button>';}).join('')+'<button class="bkc add" data-act="bookAdd" aria-label="استيراد مادة"><b>＋</b></button><button class="bkc add add2" data-act="addTerm"><b>＋ إضافة مادة</b></button></div>';
+    return '<button class="bkc'+(id===S.cur?' on':'')+(id===run?' run':'')+'" data-act="bookGo" data-id="'+id+'"><b>'+esc(l.sub)+'</b>'+(l.cls?'<small>'+esc(l.cls)+'</small>':'')+'</button>';}).join('')+'</div>';
 }
 function exchSheet(importOnly){
   const b=curBook();
@@ -823,12 +856,19 @@ function exchSheet(importOnly){
     $('#po',e2).onclick=async()=>{try{const d=JSON.parse($('#pt',e2).value.trim());if(!d||d.kind!=='teacher-book'||!d.book)throw 0;e2.remove();await importBookData(d.book);}catch(e){toast('النص ليس نسخة مادة صالحة');}};});
   $('#xc',el).onclick=()=>el.close();
 }
-function weekSheet(){
+function wkStep(k){
   const b=curBook();
-  const el=openSheet('<h2>الأسبوع الدراسي</h2><div class="row" style="justify-content:center;gap:24px;margin:10px 0"><button class="btn sec" id="wm" style="font-size:24px;width:64px">−</button><b id="wv" style="font-size:32px">'+b.hdr.week+'</b><button class="btn sec" id="wp" style="font-size:24px;width:64px">+</button></div><div class="acts"><button class="btn full" id="ok">تم</button></div>');
-  const up=()=>{$('#wv',el).textContent=b.hdr.week;save();};
-  $('#wp',el).onclick=()=>{b.hdr.week++;up();};
-  $('#wm',el).onclick=()=>{b.hdr.week=Math.max(1,b.hdr.week-1);up();};
+  if(calWeekBase())S.cal.wkAdj=(parseInt(S.cal.wkAdj)||0)+k;
+  else b.hdr.week=Math.max(1,b.hdr.week+k);
+  save();
+}
+function weekSheet(){
+  const b=curBook(),auto=!!calWeekBase();
+  const el=openSheet('<h2>الأسبوع الدراسي</h2><p class="mut" style="text-align:center;margin:0">'+(auto?'يُحسب تلقائيًا من بداية الدراسة. استعمل − و + للتقديم أو التأخير عند الحاجة.':'حدد بداية العام الدراسي من «الجدول» ليُحسب الأسبوع تلقائيًا.')+'</p><div class="row" style="justify-content:center;gap:24px;margin:10px 0"><button class="btn sec" id="wm" style="font-size:24px;width:64px">−</button><b id="wv" style="font-size:32px">'+curWeek(b)+'</b><button class="btn sec" id="wp" style="font-size:24px;width:64px">+</button></div>'+(auto?'<div class="acts"><button class="btn ghost full" id="wr">إعادة الحساب التلقائي</button></div>':'')+'<div class="acts"><button class="btn full" id="ok">تم</button></div>');
+  const up=()=>{$('#wv',el).textContent=curWeek(b);};
+  $('#wp',el).onclick=()=>{wkStep(1);up();};
+  $('#wm',el).onclick=()=>{wkStep(-1);up();};
+  const wr=$('#wr',el);if(wr)wr.onclick=()=>{S.cal.wkAdj=0;save();up();};
   $('#ok',el).onclick=()=>{el.remove();render();};
 }
 function stuDone(b,s){b.ns=b.ns||{};const e=v=>v===undefined||v===''||v===null;
@@ -962,20 +1002,14 @@ function studentSheet(sid){
   $('#up',el).onclick=()=>mv(-1);
   $('#dn',el).onclick=()=>mv(1);
   $('#cl',el).onclick=()=>el.close();
-  $('#dl',el).onclick=()=>{
-    const box=el.querySelector('.sh'),keep=box.innerHTML,code=String(1000+Math.floor(Math.random()*9000));let st=1;
-    const show=()=>{
-      const msgs={1:['⚠ تأكيد الحذف (1 من 3)','هل تريد حذف الطالب «'+esc(s.name)+'»؟'],2:['⚠ تأكيد الحذف (2 من 3)','سيُحذف الطالب وكل درجاته وحالاته نهائيًا من هذا الدفتر. هل أنت متأكد؟']};
-      if(st<3)box.innerHTML='<h2>'+msgs[st][0]+'</h2><p>'+msgs[st][1]+'</p><div class="acts"><button class="btn bad full" id="y">نعم، تابع</button><button class="btn ghost full" id="n">إلغاء</button></div>';
-      else box.innerHTML='<h2>⚠ تأكيد الحذف (3 من 3)</h2><p>اكتب الرقم السري للتأكيد:</p><div style="text-align:center;font-size:34px;font-weight:800;letter-spacing:8px;color:#9ca3af;margin:6px 0 10px;direction:ltr">'+code+'</div><input type="text" id="pw" inputmode="numeric" maxlength="4" placeholder="'+code+'" style="text-align:center;font-size:22px;direction:ltr"><div class="acts"><button class="btn bad full" id="y">حذف الطالب نهائيًا</button><button class="btn ghost full" id="n">إلغاء</button></div>';
-      $('#n',box).onclick=()=>el.close();
-      $('#y',box).onclick=()=>{
-        if(st<3){st++;show();return;}
-        if($('#pw',box).value.trim()!==code){buzz($('#pw',box));toast('الرقم السري غير صحيح');return;}
-        const k=b.students.findIndex(x=>x.id===s.id);if(k>=0)b.students.splice(k,1);
-        ['scores','ns','prev','sdt'].forEach(m=>{const o=b[m];if(o)Object.keys(o).forEach(q=>{if(q.startsWith(s.id+'|'))delete o[q];});});
-        save();el.remove();render();toast('تم حذف «'+s.name+'»');};
-    };show();};
+  $('#dl',el).onclick=async()=>{
+    el.remove();
+    if(await strongDelete('حذف الطالب «'+s.name+'» وكل درجاته وحالاته نهائيًا؟')){
+      const k=b.students.findIndex(x=>x.id===s.id);if(k>=0)b.students.splice(k,1);
+      ['scores','ns','prev','sdt'].forEach(m=>{const o=b[m];if(o)Object.keys(o).forEach(q=>{if(q.startsWith(s.id+'|'))delete o[q];});});
+      save();render();toast('تم حذف «'+s.name+'»');
+    }
+  };
 }
 function studentLens(sid){
   const b=curBook(),s=b.students.find(x=>x.id===sid);if(!s)return;let only=false;
@@ -1071,7 +1105,7 @@ async function booksSheet(){
   const bind=()=>{
     el.querySelectorAll('[data-sw]').forEach(x=>x.onclick=()=>{S.cur=x.dataset.sw;save();el.remove();render();});
     el.querySelectorAll('[data-rn]').forEach(x=>x.onclick=async()=>{const id=x.dataset.rn;const n=await askText({title:'اسم الدفتر',value:S.books[id].name});if(n){S.books[id].name=n;save();el.remove();render();}});
-    el.querySelectorAll('[data-dl]').forEach(x=>x.onclick=async()=>{const id=x.dataset.dl;el.remove();if(await confirmDelete('حذف الدفتر «'+S.books[id].name+'» بكل طلابه ودرجاته؟')){delete S.books[id];S.order=S.order.filter(k=>k!==id);if(S.cur===id)S.cur=S.order[0];save();render();}});
+    el.querySelectorAll('[data-dl]').forEach(x=>x.onclick=async()=>{const id=x.dataset.dl;el.remove();if(await strongDelete('حذف الدفتر «'+S.books[id].name+'» بكل طلابه ودرجاته؟')){delete S.books[id];S.order=S.order.filter(k=>k!==id);if(S.cur===id)S.cur=S.order[0];save();render();}});
     $('#nb',el).onclick=async()=>{el.remove();const n=await askText({title:'اسم الدفتر الجديد',placeholder:'مثال: الثالث / فصل ٤ – لغتي',ok:'إنشاء'});if(n){const b=newBook(n);S.books[b.id]=b;S.order.push(b.id);S.cur=b.id;save();render();}};
     $('#cl',el).onclick=()=>el.close();
   };
@@ -1115,7 +1149,7 @@ function hdrSheet(title,note,onMove,onDel,delMsg){
   const el=openSheetB('<h2>'+title+'</h2><p class="mut">'+note+'</p><div class="acts"><button class="btn ghost" id="pv">→ تقديم</button><button class="btn ghost" id="nx">تأخير ←</button><button class="btn bad full" id="del">حذف</button></div>');
   $('#pv',el).onclick=()=>{if(onMove(-1)){save();el.remove();render();}else toast('لا يمكن التقديم أكثر');};
   $('#nx',el).onclick=()=>{if(onMove(1)){save();el.remove();render();}else toast('لا يمكن التأخير أكثر');};
-  $('#del',el).onclick=async()=>{el.remove();if(await confirmDelete(delMsg)&&await confirmDelete('تأكيد أخير: '+delMsg)){onDel();save();render();toast('تم الحذف');}};
+  $('#del',el).onclick=async()=>{el.remove();if(await strongDelete(delMsg)){onDel();save();render();toast('تم الحذف');}};
 }
 function termOpt(t){
   const b=curBook(),ids=()=>b.cols.filter(c=>c.term===t).map(c=>c.id).concat((b.noor||[]).filter(n=>(n.term||1)===t).map(n=>n.id));
@@ -1148,13 +1182,13 @@ function termSheet(bar){if(bar!==undefined)TSBAR=bar;
   el.querySelectorAll('[data-at]').forEach(x=>x.onclick=()=>{const t=+x.dataset.at;b.nTerms=Math.max(b.nTerms||3,t);b.np=b.np||{};for(let u=maxT+1;u<=t;u++)b.np[u]=3;fixCols(b);save();render();toast('تمت إضافة '+TERMN[t]);el.remove();termSheet();});
   el.querySelectorAll('[data-ap]').forEach(x=>x.onclick=()=>{const t=+x.dataset.ap;b.np=b.np||{};b.np[t]=per(t)+1;save();toast('تمت إضافة الفترة');el.remove();termSheet();});
   el.querySelectorAll('[data-mt]').forEach(x=>x.onclick=async()=>{const t=+x.dataset.mt;el.remove();
-    if(await confirmDelete('حذف '+TERMN[t]+' مع '+cnt(t)+' مهارة ودرجاتها؟')){
+    if(await strongDelete('حذف '+TERMN[t]+' مع '+cnt(t)+' مهارة ودرجاتها؟')){
       const ids=b.cols.filter(c=>c.term===t).map(c=>c.id).concat((b.noor||[]).filter(n=>(n.term||1)===t).map(n=>n.id));
       b.cols=b.cols.filter(c=>c.term!==t);b.noor=(b.noor||[]).filter(n=>(n.term||1)!==t);dropKeys(b,ids);
       b.nTerms=t-1;if(b.np)delete b.np[t];if(b.perOrd)delete b.perOrd[t];fixCols(b);save();render();toast('تم الحذف');}
     termSheet();});
   el.querySelectorAll('[data-mp]').forEach(x=>x.onclick=async()=>{const [t,p]=x.dataset.mp.split('|').map(Number);el.remove();
-    if(await confirmDelete('حذف الفترة '+(ORD[p-1]||p)+' من '+TERMN[t]+' مع '+cnt(t,p)+' مهارة؟')){
+    if(await strongDelete('حذف الفترة '+(ORD[p-1]||p)+' من '+TERMN[t]+' مع '+cnt(t,p)+' مهارة؟')){
       const ids=b.cols.filter(c=>c.term===t&&c.per===p).map(c=>c.id).concat((b.noor||[]).filter(n=>(n.term||1)===t&&(n.per||1)===p).map(n=>n.id));
       b.cols=b.cols.filter(c=>!(c.term===t&&c.per===p));b.noor=(b.noor||[]).filter(n=>!((n.term||1)===t&&(n.per||1)===p));dropKeys(b,ids);
       b.np=b.np||{};b.np[t]=p-1;if(b.perOrd)delete b.perOrd[t];fixCols(b);save();render();toast('تم الحذف');}
@@ -1178,6 +1212,56 @@ async function exportBookFile(b){
     $('#jt',el).value=data;$('#cx',el).onclick=()=>{el.remove();res(false);};
     $('#cp',el).onclick=async()=>{try{await navigator.clipboard.writeText(data);}catch(e){}el.remove();res(true);};});
 }
+function delPickSheet(){
+  if(S.order.length<2){toast('لا يمكن حذف المادة الوحيدة');return;}
+  const el=openSheet('<h2>حذف مادة</h2><p class="mut">اختر المادة التي تريد حذفها.</p><div class="sg">'+S.order.map(id=>'<div class="sgh"><span class="chp grow">'+esc(S.books[id].name)+'</span><button class="btn bad sm" data-dl="'+id+'" aria-label="حذف '+esc(S.books[id].name)+'">حذف</button></div>').join('')+'</div><div class="acts"><button class="btn ghost full" id="dpc">إغلاق</button></div>');
+  $('#dpc',el).onclick=()=>el.close();
+  el.querySelectorAll('[data-dl]').forEach(x=>x.onclick=()=>{el.remove();delBookSheet(x.dataset.dl);});
+}
+const pinHash=v=>{let h=5381;const t='dft|'+v;for(let i=0;i<t.length;i++)h=((h<<5)+h+t.charCodeAt(i))>>>0;return String(h);};
+function pinAsk(title,note,forgot,twice){
+  return new Promise(res=>{
+    const el=openSheet('<h2>'+esc(title)+'</h2>'+(note?'<p class="mut">'+esc(note)+'</p>':'')+'<input type="password" id="pn" class="pinin" inputmode="numeric" maxlength="4" autocomplete="off" aria-label="الرقم السري">'+(twice?'<p class="mut" style="margin:10px 0 0">أعد كتابة الرقم للتأكد</p><input type="password" id="pn2" class="pinin" inputmode="numeric" maxlength="4" autocomplete="off" aria-label="إعادة الرقم السري">':'')+(forgot?'<button class="btn ghost full" id="pf" style="margin-top:6px">نسيت الرقم السري</button>':'')+'<div class="acts"><button class="btn" id="ok">تأكيد</button><button class="btn ghost" id="no">إلغاء</button></div>',{onClose:()=>res(null)});
+    const q=$('#pn',el),q2=$('#pn2',el);setTimeout(()=>q.focus(),60);
+    const go=()=>{const v=q.value.trim();if(!/^\d{4}$/.test(v)){toast('اكتب ٤ أرقام');return;}if(q2&&q2.value.trim()!==v){toast('الرقمان غير متطابقين');return;}el.remove();res(v);};
+    $('#ok',el).onclick=go;q.onkeydown=e=>{if(e.key==='Enter')(q2?q2:{focus:go}).focus();};if(q2)q2.onkeydown=e=>{if(e.key==='Enter')go();};
+    $('#no',el).onclick=()=>el.close();
+    const pf=$('#pf',el);if(pf)pf.onclick=()=>{el.remove();res('__forgot');};
+  });
+}
+async function pinCreate(){
+  const a=await pinAsk('إنشاء رقم سري','اكتب رقمًا سريًا من ٤ أرقام. سيُطلب عند الحذف والاستيراد الكامل.',false,true);
+  if(!a||a==='__forgot')return false;
+  S.settings.pinH=pinHash(a);save();toast('تم إنشاء الرقم السري');return true;
+}
+function codeConfirm(){
+  return new Promise(res=>{
+    const code=String(1000+Math.floor(Math.random()*9000));
+    const el=openSheet('<h2>الرقم السري للحذف</h2><p class="mut">اكتب هذا الرقم للتأكيد:</p><div style="text-align:center;font-size:36px;font-weight:800;letter-spacing:8px;color:#9ca3af;margin:6px 0 10px;direction:ltr" aria-label="الرقم '+code+'">'+code+'</div><input type="text" id="pw" class="pinin" inputmode="numeric" maxlength="4" autocomplete="off" aria-label="اكتب الرقم">'+'<div class="acts"><button class="btn bad" id="ok">حذف نهائيًا</button><button class="btn ghost" id="no">إلغاء</button></div>',{onClose:()=>res(false)});
+    const q=$('#pw',el);setTimeout(()=>q.focus(),60);
+    const go=()=>{if(q.value.trim()!==code){toast('الرقم غير صحيح');q.value='';return;}el.remove();res(true);};
+    $('#ok',el).onclick=go;q.onkeydown=e=>{if(e.key==='Enter')go();};
+    $('#no',el).onclick=()=>el.close();
+  });
+}
+async function requirePin(why){
+  if(!S.settings.pinH)return await pinCreate();
+  for(let i=0;i<3;i++){
+    const v=await pinAsk('الرقم السري',why||'اكتب الرقم السري للمتابعة.',true);
+    if(v===null)return false;
+    if(v==='__forgot'){
+      if(await confirmBox('سيُمسح الرقم السري الحالي وتنشئ رقمًا جديدًا. هل أنت متأكد؟','نعم، امسحه')){S.settings.pinH='';save();return await pinCreate();}
+      return false;
+    }
+    if(pinHash(v)===S.settings.pinH)return true;
+    toast('الرقم غير صحيح');
+  }
+  return false;
+}
+async function changePin(){
+  if(S.settings.pinH){const v=await pinAsk('الرقم السري الحالي','اكتب الرقم الحالي أولًا.');if(!v||v==='__forgot')return;if(pinHash(v)!==S.settings.pinH){toast('الرقم غير صحيح');return;}}
+  await pinCreate();
+}
 function delBookSheet(id){
   const b=S.books[id];if(!b)return;
   if(S.order.length<2){toast('لا يمكن حذف المادة الوحيدة');return;}
@@ -1187,8 +1271,8 @@ function delBookSheet(id){
     '<button class="btn bad full" id="dpm">🗑 حذف نهائي</button><small class="mut">تنبيه: لن تظهر الدرجات مرة أخرى.</small><button class="btn ghost full" id="dbk">→ رجوع</button></div>');
   const kill=()=>{delete S.books[id];S.order=S.order.filter(k=>k!==id);if(S.cur===id)S.cur=S.order[0];save();render();toast('تم حذف المادة');};
   $('#dbk',el).onclick=()=>{el.remove();subjSheet();};
-  $('#dsv',el).onclick=async()=>{el.remove();if(await exportBookFile(b)){if(await confirmBox('تم الحفظ. تأكيد حذف «'+b.name+'» الآن؟','نعم، احذف')){kill();return;}}subjSheet();};
-  $('#dpm',el).onclick=async()=>{el.remove();if(await confirmDelete('حذف «'+b.name+'» نهائيًا؟ لن تظهر الدرجات مرة أخرى.'))kill();else subjSheet();};
+  $('#dsv',el).onclick=async()=>{el.remove();if(await exportBookFile(b)){if(await strongDelete('حذف «'+b.name+'» الآن؟')){kill();return;}}subjSheet();};
+  $('#dpm',el).onclick=async()=>{el.remove();if(await strongDelete('حذف «'+b.name+'» نهائيًا؟ لن تظهر الدرجات مرة أخرى.'))kill();else subjSheet();};
 }
 function subjSheet(){
   const cs=subjCombos(),used=new Set();
@@ -1208,7 +1292,7 @@ function subjSheet(){
   el.querySelectorAll('[data-add]').forEach(x=>x.onclick=async()=>{const c=cs[+x.dataset.add];el.remove();
     if(await confirmBox('إضافة مادة «'+comboName(c)+'» إلى المتابعة؟','نعم، أضف',false)){const b=newBook(comboName(c));
       const src=(c.grade||c.cls)?S.order.map(k=>S.books[k]).find(k=>k.students.length&&(!c.grade||k.name.includes(c.grade))&&(!c.cls||k.name.includes(String(c.cls)))):null;
-      if(src){b.students=src.students.map(t=>({id:uid(),name:t.name}));b.addAlpha=src.addAlpha;}
+      if(src){b.students=src.students.map((t,i)=>({id:uid(),name:t.name,o:i+1}));b.addAlpha=src.addAlpha;}
       S.books[b.id]=b;S.order.push(b.id);S.cur=b.id;save();render();toast(src?'تمت إضافة المادة ونُقل إليها '+b.students.length+' طالب من نفس الفصل':'تمت إضافة المادة');}else subjSheet();});
 }
 function newSumSheet(b){
@@ -1468,18 +1552,29 @@ function multiVoiceSheet(){
   const mark=()=>{L.querySelectorAll('.mvw').forEach((w,i)=>{const v=(R[i]||'').trim(),k=nkey(v);let m='';
       if(k){const e=dupIdx(b,v);if(e>=0)m='مكرر مع الطالب رقم '+(e+1)+' — أضف اسمًا ثالثًا أو علامة للتمييز';else if(R.slice(0,i).some(y=>nkey(y)===k))m='مكرر في هذه القائمة — أضف اسمًا ثالثًا أو علامة للتمييز';}
       w.classList.toggle('dup',!!m);w.querySelector('.mvd').textContent=m;});};
-  const draw=()=>{L.innerHTML=R.map((x,i)=>'<div class="mvw"><div class="mvr'+(on&&i===R.length-1?' act':'')+'"><span class="mvn">'+(i+1)+'</span><input type="text" data-i="'+i+'" value="'+esc(x)+'" placeholder="اسم الطالب"><button type="button" class="mvx" data-x="'+i+'" aria-label="حذف">✕</button></div><div class="mvd"></div></div>').join('');
-    L.querySelectorAll('input').forEach(x=>{x.oninput=()=>{R[+x.dataset.i]=x.value;mark();};});
+  const draw=()=>{L.innerHTML=R.map((x,i)=>'<div class="mvw"><div class="mvr'+(on&&i===R.length-1?' act':'')+'"><span class="mvn">'+(i+1)+'</span><input type="text" data-i="'+i+'" value="'+esc(x)+'" placeholder="اسم الطالب" enterkeyhint="next" autocomplete="off"><button type="button" class="mvx" data-x="'+i+'" aria-label="حذف">✕</button></div><div class="mvd"></div></div>').join('');
+    L.querySelectorAll('input').forEach(x=>{x.oninput=()=>{R[+x.dataset.i]=x.value;mark();};
+      x.onkeydown=e=>{if(e.key!=='Enter'&&e.keyCode!==13)return;e.preventDefault();if(on)return;const i=+x.dataset.i;R[i]=x.value;
+        if(i>=R.length-1){if(!x.value.trim())return;R.push('');draw();}
+        const go=()=>{const all=L.querySelectorAll('input'),nx=all[i+1];if(nx){nx.focus();try{nx.scrollIntoView({block:'nearest'});}catch(e){}}};go();setTimeout(()=>{const ae=document.activeElement;if(!ae||ae.tagName!=='INPUT')go();},30);};});
     L.querySelectorAll('.mvx').forEach(x=>x.onclick=()=>{R.splice(+x.dataset.x,1);if(!R.length)R=[''];draw();});
     mark();L.scrollTop=L.scrollHeight;};
+  let segs=[];
+  const fromSpeech2=it=>{
+    const part=t=>{const p=parseSpoken(t,false);return p.length?p:[t.trim()].filter(Boolean);};
+    let out=base.slice();segs.forEach(g=>{out=out.concat(part(g));});
+    if(it&&it.trim())out=out.concat(part(it));else out.push('');
+    R=out.length?out:[''];draw();
+    const ins=L.querySelectorAll('input');
+  };
   const fromSpeech=t=>{const p=parseSpoken(t,true);R=base.concat(p.length?p:(base.length?[]:['']));if(!R.length)R=[''];draw();};
   const stop=()=>{if(!on&&!rec)return;on=false;mb.textContent='🎤 ابدأ التسجيل';mb.classList.remove('rec');try{rec&&rec.stop();}catch(e){}rec=null;R=R.filter((x,i)=>x.trim()||i===R.length-1);if(!R.length)R=[''];draw();};
   const start=()=>{
     if(!SR){toast('الإملاء الصوتي غير متاح هنا. سيعمل في التطبيق بعد التحويل');return;}
-    base=R.filter(x=>x.trim());fin='';on=true;mb.textContent='⏹ إيقاف التسجيل';mb.classList.add('rec');
+    base=R.filter(x=>x.trim());fin='';segs=[];on=true;mb.textContent='⏹ إيقاف التسجيل';mb.classList.add('rec');
     const go=()=>{try{
       const r=new SR();rec=r;r.lang='ar-SA';r.continuous=true;r.interimResults=true;
-      r.onresult=e=>{let it='';for(let i=e.resultIndex;i<e.results.length;i++){const x=e.results[i][0].transcript;if(e.results[i].isFinal)fin+=(fin&&!/\s$/.test(fin)?' ':'')+x.trim();else it+=x;}fromSpeech(fin+(it?' '+it:''));};
+      r.onresult=e=>{let it='';for(let i=e.resultIndex;i<e.results.length;i++){const x=e.results[i][0].transcript;if(e.results[i].isFinal){if(x.trim())segs.push(x.trim());}else it+=x;}fromSpeech2(it);};
       r.onerror=e=>{if(e.error==='not-allowed'||e.error==='service-not-allowed'){toast('لم يُسمح باستخدام الميكروفون');stop();}};
       r.onend=()=>{if(on)setTimeout(go,150);};
       r.start();}catch(e){stop();toast('تعذر تشغيل الميكروفون');}};
@@ -1543,7 +1638,7 @@ function liveHTML(){
   const ls=lessonsToday().filter(x=>x.c&&(x.c.subject||x.c.grade||x.c.cls));
   const lc=ls.length?'<div class="lrow">'+ls.map(x=>{const bid=bookForLesson(x.c),on=x.p===runP,sel=bid&&bid===S.cur;
     return '<button class="lchip'+(on?' on':'')+(sel&&!on?' sel':'')+'" data-act="lessonGo" data-p="'+x.p+'"><i style="background:'+clsColor(x.c)+'"></i><span>'+esc([[x.c.grade,x.c.cls].filter(Boolean).join('/'),x.c.subject].filter(Boolean).join(' '))+'</span><small>'+x.from+'</small></button>';}).join('')+'</div>':'';
-  return '<div class="info4"><div class="chip"><span>'+L.s.replace(/^بداية /,'')+'</span><b>'+L.a+'</b></div><div class="chip"><span>'+L.e+'</span><b>'+L.b+'</b></div><div class="chip rem"><span>متبقي</span><b>'+L.r+'</b></div><button class="chip wkc'+(calTerm().length>20?' long':'')+'" data-act="wkSheet"><span>'+(calTerm()||'الأسبوع')+'</span><b>'+(calTermN()?'الأسبوع ':'')+b.hdr.week+'</b></button></div>'+lc;
+  return '<div class="info4"><div class="chip"><span>'+L.s.replace(/^بداية /,'')+'</span><b>'+L.a+'</b></div><div class="chip"><span>'+L.e+'</span><b>'+L.b+'</b></div><div class="chip rem"><span>متبقي</span><b>'+L.r+'</b></div><button class="chip wkc'+(calTerm().length>20?' long':'')+'" data-act="wkSheet"><span>'+(calTerm()||'الأسبوع')+'</span><b>'+(calTermN()?'الأسبوع ':'')+curWeek(b)+'</b></button></div>'+lc;
 }
 function clsColor(c){
   const L=S.lists;
@@ -1598,6 +1693,21 @@ function calHoliday(){
   for(const [a,b,n] of FIXED_HOL){if(inRange(d,c[a],c[b]))return {name:n};}
   return (c.hol||[]).find(h=>inRange(d,h.s,h.e))||null;
 }
+function calWeekBase(){
+  const c=S.cal,t=parseInt(c.term)||1;
+  const nx=d=>{if(!d)return '';const x=new Date(d+'T00:00:00');x.setDate(x.getDate()+1);return x.getFullYear()+'-'+String(x.getMonth()+1).padStart(2,'0')+'-'+String(x.getDate()).padStart(2,'0');};
+  if(t===2&&c.h1e)return nx(c.h1e);
+  if(t===3&&c.h2e)return nx(c.h2e);
+  if(t===1)return c.yStart||'';
+  return '';
+}
+function curWeek(b){
+  const base=calWeekBase();
+  if(!base)return b.hdr.week;
+  const a=new Date(base+'T00:00:00'),n=new Date(isoToday()+'T00:00:00');
+  const w=Math.floor((n-a)/604800000)+1+(parseInt(S.cal.wkAdj)||0);
+  return Math.max(1,w);
+}
 function calTermN(){const t=parseInt(S.cal.term);return t>=1&&t<=20?(TERMN[t]||'').replace('الدراسي ',''):'';}
 function calTerm(){const t=parseInt(S.cal.term);return t>=1&&t<=20?TERMN[t]:'';}
 function calStatusText(){
@@ -1640,10 +1750,90 @@ function holSheet(){
   };
   $('#no',el).onclick=()=>el.close();
 }
+const VOICE={};
+function vdb(){return new Promise((res,rej)=>{const r=indexedDB.open('daftar_voices',1);r.onupgradeneeded=()=>r.result.createObjectStore('v');r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error);});}
+async function vGetAll(){try{const db=await vdb();return await new Promise(res=>{const o={},rq=db.transaction('v').objectStore('v').openCursor();rq.onsuccess=()=>{const c=rq.result;if(c){o[c.key]=c.value;c.continue();}else res(o);};rq.onerror=()=>res(o);});}catch(e){return {};}}
+async function vPut(k,buf){try{const db=await vdb();return await new Promise(res=>{const tx=db.transaction('v','readwrite');tx.objectStore('v').put(buf,k);tx.oncomplete=()=>res(true);tx.onerror=()=>res(false);});}catch(e){return false;}}
+async function vDel(k){try{const db=await vdb();await new Promise(res=>{const tx=db.transaction('v','readwrite');tx.objectStore('v').delete(k);tx.oncomplete=()=>res(true);tx.onerror=()=>res(false);});}catch(e){}}
+function bufB64(buf){const u=new Uint8Array(buf);let s='';for(let i=0;i<u.length;i+=0x8000)s+=String.fromCharCode.apply(null,u.subarray(i,i+0x8000));return btoa(s);}
+function voiceUse(k,buf){try{if(VOICE[k])URL.revokeObjectURL(VOICE[k]);}catch(e){}VOICE[k]=URL.createObjectURL(new Blob([buf],{type:'audio/wav'}));try{if(window.Android&&Android.storeTone)Android.storeTone('c_v_'+k,bufB64(buf));}catch(e){}}
+function hasVoice(k){return !!VOICE[k];}
+async function loadVoices(){const all=await vGetAll();Object.keys(all).forEach(k=>voiceUse(k,all[k]));try{window.nativeSyncSoon&&nativeSyncSoon();}catch(e){}}
+setTimeout(loadVoices,700);
+function vLabel(k){return k==='go'?'وقت التحرك':(k[0]==='s'?'بداية':'نهاية')+' الحصة '+(ORD[+k.slice(1)-1]||k.slice(1));}
+function voiceKeys(){let n=7;try{n=Math.max.apply(null,S.sched.days.map(d=>dayCount(S.sched,d)));}catch(e){}n=Math.max(1,Math.min(n||7,12));const k=['go'];for(let p=1;p<=n;p++)k.push('s'+p);for(let p=1;p<=n;p++)k.push('e'+p);return k;}
+const FX=[['raw','كما سجّلت'],['clean','صافٍ'],['radio','إذاعي'],['deep','عميق'],['hall','فخم بصدى'],['high','رفيع'],['calm','هادئ']];
+async function startRec(){
+  const stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:true,autoGainControl:true}});
+  const Ctx=window.AudioContext||window.webkitAudioContext,ctx=new Ctx(),src=ctx.createMediaStreamSource(stream),pr=ctx.createScriptProcessor(4096,1,1),mute=ctx.createGain(),chunks=[];
+  mute.gain.value=0;pr.onaudioprocess=e=>chunks.push(new Float32Array(e.inputBuffer.getChannelData(0)));
+  src.connect(pr);pr.connect(mute);mute.connect(ctx.destination);
+  return {stop(){try{stream.getTracks().forEach(t=>t.stop());pr.disconnect();src.disconnect();}catch(e){}const rate=ctx.sampleRate;try{ctx.close();}catch(e){}let n=0;chunks.forEach(c=>n+=c.length);const d=new Float32Array(n);let o=0;chunks.forEach(c=>{d.set(c,o);o+=c.length;});return {data:d,rate};}};
+}
+async function applyFx(data,rate,fx){
+  const OUT=22050,pr=fx==='deep'?0.86:fx==='high'?1.15:1,dur=data.length/rate/pr,tail=fx==='hall'?1.2:.2;
+  const oc=new (window.OfflineAudioContext||window.webkitOfflineAudioContext)(1,Math.ceil((dur+tail)*OUT),OUT);
+  const ab=oc.createBuffer(1,data.length,rate);ab.copyToChannel(data,0);
+  const src=oc.createBufferSource();src.buffer=ab;src.playbackRate.value=pr;
+  let node=src;const chain=n=>{node.connect(n);node=n;};
+  const bq=(type,f,q,g)=>{const b=oc.createBiquadFilter();b.type=type;b.frequency.value=f;if(q)b.Q.value=q;if(g!==undefined)b.gain.value=g;chain(b);};
+  if(fx!=='raw')bq('highpass',fx==='radio'?300:90);
+  if(fx==='radio'){bq('lowpass',3400);bq('peaking',1800,1,6);}
+  if(fx==='deep')bq('lowshelf',200,1,7);
+  if(fx==='high')bq('highshelf',3000,1,5);
+  if(fx==='calm'){bq('lowpass',4200);bq('lowshelf',250,1,3);}
+  if(fx==='clean')bq('peaking',3000,1,3);
+  if(fx!=='raw'){const c=oc.createDynamicsCompressor();c.threshold.value=-30;c.ratio.value=4;chain(c);}
+  if(fx==='hall'){
+    const conv=oc.createConvolver(),ir=oc.createBuffer(1,OUT,OUT),d=ir.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,2.5);conv.buffer=ir;
+    const wet=oc.createGain(),dry=oc.createGain();wet.gain.value=.45;node.connect(dry);node.connect(conv);conv.connect(wet);dry.connect(oc.destination);wet.connect(oc.destination);
+  }else node.connect(oc.destination);
+  src.start();
+  const r=await oc.startRendering();let o=r.getChannelData(0).slice();
+  let a=0,b=o.length-1;const th=.015;while(a<b&&Math.abs(o[a])<th)a++;while(b>a&&Math.abs(o[b])<th)b--;a=Math.max(0,a-Math.floor(OUT*.05));b=Math.min(o.length-1,b+Math.floor(OUT*.15));o=o.slice(a,b+1);
+  let pk=0;for(let i=0;i<o.length;i++)pk=Math.max(pk,Math.abs(o[i]));if(pk>0){const g=.9/pk;for(let i=0;i<o.length;i++)o[i]*=g;}
+  return o;
+}
+function encodeWav(f,rate,padSec){
+  const pad=Math.floor((padSec||0)*rate),n=f.length+pad,buf=new ArrayBuffer(44+n*2),v=new DataView(buf),w=(o,s)=>{for(let i=0;i<s.length;i++)v.setUint8(o+i,s.charCodeAt(i));};
+  w(0,'RIFF');v.setUint32(4,36+n*2,true);w(8,'WAVE');w(12,'fmt ');v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,1,true);v.setUint32(24,rate,true);v.setUint32(28,rate*2,true);v.setUint16(32,2,true);v.setUint16(34,16,true);w(36,'data');v.setUint32(40,n*2,true);
+  for(let i=0;i<f.length;i++){const x=Math.max(-1,Math.min(1,f[i]));v.setInt16(44+i*2,x<0?x*0x8000:x*0x7fff,true);}
+  return buf;
+}
+function voiceSheet(){
+  const keys=voiceKeys();
+  const el=openSheet('<h2>النطق والأصوات <small style="font-size:12px;color:#b45309">(تجريبي)</small></h2><p class="mut">سجّل صوتك لأي تنبيه. ما لم تسجّله يرنّ بالنغمة التي اخترتها.</p><div>'+keys.map(k=>'<div class="tone"><span class="grow">'+esc(vLabel(k))+(VOICE[k]?' <b style="color:#16a34a">✓</b>':'')+'</span><button class="btn sec sm" data-vr="'+k+'">سجّل</button>'+(VOICE[k]?'<button class="btn sec sm" data-vp="'+k+'">استمع</button><button class="btn bad sm" data-vd="'+k+'">حذف</button>':'')+'</div>').join('')+'</div><div class="acts"><button class="btn ghost full" id="no">إغلاق</button></div>');
+  $('#no',el).onclick=()=>el.close();
+  el.querySelectorAll('[data-vr]').forEach(b=>b.onclick=()=>{el.remove();recSheet(b.dataset.vr);});
+  el.querySelectorAll('[data-vp]').forEach(b=>b.onclick=()=>{try{new Audio(VOICE[b.dataset.vp]).play();}catch(e){}});
+  el.querySelectorAll('[data-vd]').forEach(b=>b.onclick=async()=>{const k=b.dataset.vd;if(!(await confirmBox('حذف تسجيل «'+vLabel(k)+'»؟','نعم، احذف',false)))return;await vDel(k);try{URL.revokeObjectURL(VOICE[k]);}catch(e){}delete VOICE[k];try{window.Android&&Android.removeTone&&Android.removeTone('c_v_'+k);}catch(e){}try{window.nativeSyncSoon&&nativeSyncSoon();}catch(e){}el.remove();voiceSheet();});
+}
+function recSheet(k){
+  const el=openSheet('<h2>'+esc(vLabel(k))+'</h2><p class="mut" id="rs">اضغط «ابدأ» ثم تكلّم بصوتك (حتى ٦ ثوانٍ). مثال: «'+esc(vLabel(k))+'».</p><div class="acts"><button class="btn full" id="rb">ابدأ التسجيل</button></div><div id="fxa" style="display:none"><p class="mut">اختر نمط الصوت (اضغط لتسمعه):</p><div id="fxc" style="display:flex;flex-wrap:wrap;gap:8px">'+FX.map(([id,n])=>'<button class="btn sec sm" data-fx="'+id+'">'+n+'</button>').join('')+'</div><div class="acts"><button class="btn full" id="sv" disabled>حفظ هذا الصوت</button><button class="btn ghost" id="rd">إعادة التسجيل</button></div></div><div class="acts"><button class="btn ghost full" id="no">إلغاء</button></div>',{onClose:()=>{try{rec&&rec.stop();}catch(e){}}});
+  let rec=null,got=null,wav=null,timer=null;
+  const rs=$('#rs',el),rb=$('#rb',el);
+  const stop=()=>{clearTimeout(timer);if(!rec)return;got=rec.stop();rec=null;rb.textContent='ابدأ التسجيل';rb.style.display='none';$('#fxa',el).style.display='block';rs.textContent='تم التسجيل. اختر نمطًا واسمعه ثم احفظ.';pick('clean');};
+  const pick=async fx=>{
+    if(!got)return;rs.textContent='جارٍ التجهيز…';
+    try{const o=await applyFx(got.data,got.rate,fx);wav=encodeWav(o,22050,1.5);$('#sv',el).disabled=false;el.querySelectorAll('[data-fx]').forEach(b=>b.classList.toggle('on',b.dataset.fx===fx));rs.textContent='النمط: '+FX.find(x=>x[0]===fx)[1];new Audio(URL.createObjectURL(new Blob([wav],{type:'audio/wav'}))).play();}
+    catch(e){rs.textContent='تعذّر تجهيز الصوت على هذا الجهاز';}
+  };
+  rb.onclick=async()=>{
+    if(rec){stop();return;}
+    try{rec=await startRec();}catch(e){toast('لم يُسمح باستخدام الميكروفون');return;}
+    rb.textContent='إيقاف التسجيل';rs.textContent='يسجّل الآن… تكلّم';timer=setTimeout(stop,6000);
+  };
+  el.querySelectorAll('[data-fx]').forEach(b=>b.onclick=()=>pick(b.dataset.fx));
+  $('#rd',el).onclick=()=>{got=null;wav=null;$('#fxa',el).style.display='none';rb.style.display='';rs.textContent='اضغط «ابدأ» ثم تكلّم.';};
+  $('#sv',el).onclick=async()=>{if(!wav)return;const ok=await vPut(k,wav);if(!ok){toast('تعذّر الحفظ');return;}voiceUse(k,wav);try{window.nativeSyncSoon&&nativeSyncSoon();}catch(e){}toast('تم حفظ صوتك');el.remove();voiceSheet();};
+  $('#no',el).onclick=()=>el.close();
+}
+window.__ringPicked=function(kind,uri,title){S.alerts['tone'+kind]='sys:'+uri;S.alerts.sysName=S.alerts.sysName||{};S.alerts.sysName[uri]=title||'رنة من الجوال';save();try{renderSched();}catch(e){}toast('تم اختيار: '+(title||'رنة'));};
+function toneOf(k){const a=S.alerts;return (k==='E'?a.toneE:a.toneS)||a.tone||'bell';}
 function toneCardPart(){
-  const cur=S.alerts.tone||'bell',all=TONES.concat(customTones().map(t=>[t.id,t.name+' (من جهازك)']));
-  return '<h3 style="margin-top:14px">نغمة التنبيه</h3><div class="tones">'+all.map(([id,n])=>'<div class="tone"><label class="row grow"><input type="radio" name="tone" class="toneR" value="'+esc(id)+'" '+(cur===id?'checked':'')+' style="width:20px;height:20px"> <span>'+esc(n)+'</span></label><button class="btn sec sm" data-act="tonePlay" data-t="'+esc(id)+'">تشغيل</button>'+(String(id).startsWith('c_')?'<button class="btn bad sm" data-act="toneDel" data-t="'+esc(id)+'">حذف</button>':'')+'</div>').join('')+'</div>'+
-    '<button class="btn ghost sm" data-act="toneAdd" style="margin-top:6px">+ إضافة نغمة من جهازك</button>';
+  const all=TONES.concat(customTones().map(t=>[t.id,t.name+' (من جهازك)']));
+  const blk=(k,title)=>{const cur=toneOf(k);const sysRow=String(cur).startsWith('sys:')?[[cur,'رنة الجوال: '+esc((S.alerts.sysName||{})[cur.slice(4)]||'مختارة')]]:[];const all2=all.concat(sysRow);const ringBtn=(window.Android&&Android.pickRingtone)?'<button class="btn ghost sm" data-act="ringPick" data-k="'+k+'" style="margin-top:6px">اختر من رنّات الجوال</button>':'';return '<h3 style="margin-top:14px">'+title+'</h3><div class="tones">'+all2.map(([id,n])=>'<div class="tone"><label class="row grow"><input type="radio" name="tone'+k+'" class="toneR" data-k="'+k+'" value="'+esc(id)+'" '+(cur===id?'checked':'')+' style="width:20px;height:20px"> <span>'+esc(n)+'</span></label><button class="btn sec sm" data-act="tonePlay" data-t="'+esc(id)+'">تشغيل</button>'+(String(id).startsWith('c_')?'<button class="btn bad sm" data-act="toneDel" data-t="'+esc(id)+'">حذف</button>':'')+'</div>').join('')+'</div>'+ringBtn;};
+  return blk('S','نغمة بداية الحصة')+blk('E','نغمة نهاية الحصة')+'<button class="btn ghost sm" data-act="toneAdd" style="margin-top:6px">+ إضافة نغمة من جهازك</button>';
 }
 function alertsCardHTML(){
   const a=S.alerts,sc=S.sched;
@@ -1664,10 +1854,11 @@ function alertsCardHTML(){
     '<div class="row" style="margin-top:10px"><button class="btn sec sm" data-act="alTest">اختبار التنبيه</button><button class="btn ghost sm" data-act="alPerm">السماح بإشعارات المتصفح</button></div></div>';
   return h;
 }
+{const _r0=render;render=function(){const r=_r0.apply(this,arguments);try{applySel();}catch(e){}return r;};}
 let AC=null;
 function initAudio(){try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();if(AC.resume)AC.resume();}catch(e){}}
 document.addEventListener('pointerdown',initAudio,{passive:true});
-const TONES=[['bell','جرس المدرسة'],['chime','جرس الحصة (دينغ دونغ)'],['uni','جرس المحاضرة (جامعي)'],['voice','نداء صوتي: «الحصة الثالثة»']];
+const TONES=[['bell','جرس المدرسة'],['chime','جرس الحصة (دينغ دونغ)'],['uni','جرس المحاضرة (جامعي)'],['ding','جرس قصير'],['twin','جرسان متتاليان'],['harp','قيثارة (نغمات صاعدة)'],['soft','هادئ ناعم'],['alert','تنبيه سريع'],['drop','قطرة'],['march','مسيرة'],['long','جرس طويل'],['voice','نداء صوتي: «الحصة الثالثة»']];
 function customTones(){try{return JSON.parse(localStorage.getItem('tb_tones')||'[]');}catch(e){return [];}}
 function tNote(f,t,d,vol){
   const o=AC.createOscillator(),o2=AC.createOscillator(),g=AC.createGain(),g2=AC.createGain(),t0=AC.currentTime+t;
@@ -1687,23 +1878,26 @@ function speak(text){
   try{if(!window.speechSynthesis)return;const u=new SpeechSynthesisUtterance(text);u.lang='ar-SA';u.rate=.95;
     const v=(speechSynthesis.getVoices()||[]).find(x=>/^ar/i.test(x.lang));if(v)u.voice=v;speechSynthesis.cancel();speechSynthesis.speak(u);}catch(e){}
 }
+const NOTE_TONES={"ding": [[880, 0, 1.4, 0.45]], "twin": [[784, 0, 0.8, 0.4], [784, 0.55, 1.4, 0.4]], "harp": [[523, 0, 1, 0.35], [659, 0.18, 1, 0.35], [784, 0.36, 1, 0.35], [1047, 0.54, 1.8, 0.35]], "soft": [[440, 0, 2, 0.3], [554, 0.5, 2, 0.3]], "alert": [[1200, 0, 0.15, 0.4], [1200, 0.25, 0.15, 0.4], [1200, 0.5, 0.15, 0.4]], "drop": [[1568, 0, 0.5, 0.4], [1175, 0.25, 1, 0.35]], "march": [[392, 0, 0.3, 0.4], [392, 0.35, 0.3, 0.4], [523, 0.7, 1, 0.4]], "long": [[659, 0, 3, 0.4], [1318, 0, 2, 0.15]]};
 function playTone(id,text){
   initAudio();
   if(String(id).startsWith('c_')){const t=customTones().find(x=>x.id===id);if(t){try{new Audio(t.data).play();return;}catch(e){}}id='bell';}
   if(!AC)return;
   if(id==='chime'){tNote(659,0,1.3,.4);tNote(523,.6,1.7,.4);tNote(659,3,1.3,.4);tNote(523,3.6,1.7,.4);}
   else if(id==='uni'){tNote(523,0,1.4,.35);tNote(659,.45,1.4,.35);tNote(784,.9,1.4,.35);tNote(1047,1.35,2.2,.4);}
+  else if(NOTE_TONES[id]){NOTE_TONES[id].forEach(n=>tNote(n[0],n[1],n[2],n[3]));}
+  else if(String(id).startsWith('sys:')){try{window.Android&&Android.previewRingtone&&Android.previewRingtone(id.slice(4));}catch(e){}}
   else if(id==='voice'){tNote(784,0,1,.35);setTimeout(()=>speak(text||'الحصة الثالثة'),900);}
   else toneBell();
 }
 function beep(){playTone('bell');}
-function fireAlert(msg){
+function fireAlert(msg,kind,vk){
   const old=$('#alertb');if(old)old.remove();
   const el=document.createElement('div');el.id='alertb';el.setAttribute('role','alert');
   el.innerHTML='<span>'+esc(msg)+'</span><button aria-label="إغلاق">×</button>';
   el.querySelector('button').onclick=()=>el.remove();
   document.body.appendChild(el);setTimeout(()=>el.remove(),30000);
-  playTone(S.alerts.tone||'bell',String(msg).split(' · ')[0]);try{navigator.vibrate&&navigator.vibrate([300,150,300]);}catch(e){}
+  if(vk&&VOICE[vk]){try{new Audio(VOICE[vk]).play();}catch(e){playTone(toneOf(kind==='e'?'E':'S'),String(msg).split(' · ')[0]);}}else playTone(toneOf(kind==='e'?'E':'S'),String(msg).split(' · ')[0]);try{navigator.vibrate&&navigator.vibrate([300,150,300]);}catch(e){}
   try{if(window.Notification&&Notification.permission==='granted')new Notification('تنبيه الحصة',{body:msg});}catch(e){}
 }
 function arMin(n){return n===1?'دقيقة':n===2?'دقيقتان':n<=10?n+' دقائق':n+' دقيقة';}
@@ -1721,15 +1915,15 @@ function alertTick(){
   let first=0;for(let p=1;p<=n;p++){if(taught(p)){first=p;break;}}
   periodTimes(sc,day).filter(t=>t.p<=n).forEach(t=>{
     if(first&&t.p===first&&+a.goMin>0){const gk=iso+'|go',gw=t.fm-a.goMin;
-      if(nm>=gw&&nm<gw+1.5&&!FIRED[gk]){FIRED[gk]=1;const c=sc.cells[day+'|'+t.p];fireAlert('وقت التحرك: حصتك الأولى اليوم (الحصة '+(ORD[t.p-1]||t.p)+') بعد '+arMin(a.goMin)+(c&&c.subject?' · '+c.subject:''));}}
+      if(nm>=gw&&nm<gw+1.5&&!FIRED[gk]){FIRED[gk]=1;const c=sc.cells[day+'|'+t.p];fireAlert('وقت التحرك: حصتك الأولى اليوم (الحصة '+(ORD[t.p-1]||t.p)+') بعد '+arMin(a.goMin)+(c&&c.subject?' · '+c.subject:''),'s','go');}}
     [['s',t.fm,'بداية'],['e',t.tm,'نهاية']].forEach(([k,at,w])=>{
-      if(first&&t.p<first)return;
+      if(!taught(t.p))return;
       const m=alertMin(t.p,k);if(!m)return;
       const when=at-m,key=iso+'|'+t.p+k;
       if(nm>=when&&nm<when+1.5&&!FIRED[key]){
         FIRED[key]=1;
         const c=sc.cells[day+'|'+t.p],l1=c?[c.grade,c.cls].filter(Boolean).join('/'):'';
-        fireAlert('تبقى '+arMin(m)+' على '+w+' الحصة '+(ORD[t.p-1]||t.p)+(c&&c.subject?' · '+c.subject:'')+(l1?' · '+l1:''));
+        fireAlert('تبقى '+arMin(m)+' على '+w+' الحصة '+(ORD[t.p-1]||t.p)+(c&&c.subject?' · '+c.subject:'')+(l1?' · '+l1:''),k,k+t.p);
       }
     });
   });
@@ -1739,7 +1933,7 @@ function setDayN(changes){
   return (async()=>{
     for(const [day,n] of changes){
       const filled=Object.keys(sc.cells).filter(k=>k.split('|')[0]===day&&+k.split('|')[1]>n);
-      if(filled.length&&!(await confirmDelete('حذف حصة من '+day+' سيحذف '+filled.length+' خلية من الجدول؟')))return;
+      if(filled.length&&!(await strongDelete('حذف حصة من '+day+' سيحذف '+filled.length+' خلية من الجدول؟')))return;
       filled.forEach(k=>delete sc.cells[k]);sc.dayPeriods[day]=n;
     }
     sc.periods=Math.max(...sc.days.map(d=>sc.dayPeriods[d]||sc.periods));
@@ -1766,6 +1960,7 @@ function renderSched(){
       '</div><div class="card"><h3>عدد الحصص كل يوم</h3><p class="mut" style="margin:0 0 6px">اختر عدد حصص كل يوم.</p><div class="dnl">'+['كل الأيام'].concat(sc.days).map(d=>'<div class="dnr'+(d==='كل الأيام'?' all':'')+'"><b>'+d+'</b><button class="dnb" data-act="dayN" data-d="'+d+'" data-k="-1" aria-label="حذف حصة من '+d+'">−</button><span class="dnn">'+(d==='كل الأيام'?'':dayCount(sc,d))+'</span><button class="dnb" data-act="dayN" data-d="'+d+'" data-k="1" aria-label="إضافة حصة إلى '+d+'">＋</button></div>').join('')+'</div>'+
       '</div><div class="card"><h3>تخفيض أو زيادة زمن الحصة</h3><p class="mut" style="margin:0 0 6px">قصّر أو أطل حصة في يوم معين (الانصراف أو البداية).</p><div class="adjl">'+(sc.adj||[]).map(a=>'<span class="adjc">'+(a.d?a.d+' · ':'كل الأيام · ')+'الحصة '+(ORD[a.p-1]||a.p)+' · '+(a.side==='b'?'البداية ':'الانصراف ')+(a.sign>0?'زائد ':'ناقص ')+a.min+' د <button data-act="adjDel" data-i="'+a.id+'" aria-label="حذف">✕</button></span>').join('')+'<button class="adjb" data-act="adjAdd" aria-label="إضافة تعديل زمن">⏱ +</button></div></div>';
   }
+  const nowP=(()=>{const l=liveInfo().lesson;return l&&l.tag==='الآن'?l.p:0;})(),nowB=(()=>{const i=liveInfo();return i.s==='بداية الفسحة'&&sc.days.includes(JSDAY[new Date().getDay()]);})();
   const di=dateInfo('');
   h+='<div class="schd"><div class="shead"><b>جدول الحصص</b>'+(st.teacher?'<span class="tn">'+tl+' '+esc(st.teacher)+'</span>':'')+'<span class="dt">'+esc(di.h)+'</span></div><div class="swrap'+(sc.fit!==false?' fit':'')+'"><table class="st"><thead><tr><th class="dayh"></th>';
   pt.forEach(t=>{
@@ -1782,10 +1977,10 @@ function renderSched(){
       else{
         const c=sc.cells[d+'|'+p]||{};
         const l1=[c.grade,c.cls].filter(Boolean).join('/');
-        if(c.subject||l1)h+='<td><button class="fill" style="background:'+clsColor(c)+'" data-act="sc" data-d="'+d+'" data-p="'+p+'"><b>'+esc(c.subject||l1)+'</b>'+(c.subject&&l1?'<span>'+esc(l1)+'</span>':'')+an(p)+'</button></td>';
-        else h+='<td><button class="emp" data-act="sc" data-d="'+d+'" data-p="'+p+'" aria-label="'+d+' الحصة '+p+'">'+(sc.locked?'':'+')+an(p)+'</button></td>';
+        if(c.subject||l1)h+='<td><button class="fill" style="background:'+clsColor(c)+'" data-act="sc" data-d="'+d+'" data-p="'+p+'">'+(nowP===p&&d===JSDAY[new Date().getDay()]?'<i class="nowdot"></i>':'')+'<b>'+esc(c.subject||l1)+'</b>'+(c.subject&&l1?'<span>'+esc(l1)+'</span>':'')+an(p)+'</button></td>';
+        else h+='<td><button class="emp" data-act="sc" data-d="'+d+'" data-p="'+p+'" aria-label="'+d+' الحصة '+p+'">'+(nowP===p&&d===JSDAY[new Date().getDay()]?'<i class="nowdot"></i>':'')+(sc.locked?'':'+')+an(p)+'</button></td>';
       }
-      if(t.brk&&ri===0)h+='<td class="brkc" rowspan="'+sc.days.length+'"><div>فسحة<br>'+t.brk.min+' د</div></td>';
+      if(t.brk&&ri===0)h+='<td class="brkc" rowspan="'+sc.days.length+'" style="position:relative"><div>فسحة<br>'+t.brk.min+' د</div>'+(nowB?'<i class="nowdot brkdot"></i>':'')+'</td>';
     });
     h+='</tr>';
   });
@@ -1829,7 +2024,7 @@ function schedCellSheet(d,p){
     el.querySelectorAll('[data-rm]').forEach(x=>x.onclick=async()=>{const [key,i]=x.dataset.rm.split('|'),arr=L[LK[key]];if(await confirmBox('حذف «'+arr[+i]+'» من القائمة؟','نعم، احذف')){const v=arr[+i];arr.splice(+i,1);Object.values(sc.cells).forEach(cc=>{if(cc[key]===v)cc[key]='';});save();el.querySelector('.sh').innerHTML=''+draw();bind();renderSched();}});
     $('#edl',el).onclick=()=>{EDL=!EDL;el.querySelector('.sh').innerHTML=''+draw();bind();};
     $('#ok',el).onclick=()=>el.close();
-    $('#cl',el).onclick=async()=>{if(!sc.cells[k]){el.close();return;}if(await confirmDelete('مسح هذه الخلية من الجدول؟')){delete sc.cells[k];save();el.close();renderSched();}};
+    $('#cl',el).onclick=async()=>{if(!sc.cells[k]){el.close();return;}if(await strongDelete('مسح هذه الخلية من الجدول؟')){delete sc.cells[k];save();el.close();renderSched();}};
   };
   bind();
 }
@@ -2051,17 +2246,16 @@ async function backupImage(){
   await saveCanvas(cv,'نسخة-احتياطية-دفتر-المتابعة.png',true);
 }
 function pickFile(accept,cb,capture){const i=document.createElement('input');i.type='file';i.accept=accept;if(capture)i.capture=capture;i.style.display='none';i.onchange=()=>{const f=i.files[0];i.remove();if(f)cb(f);};document.body.appendChild(i);i.click();}
-function bkBanner(){const bk=S.backup;return (bk.remind&&bk.last!==isoToday()&&!curBook().demo)?'<div class="bkb"><span>لم تحفظ نسخة اليوم</span><button data-act="bkMenu">حفظ الآن</button></div>':'';}
+function bkBanner(){const bk=S.backup;return (bk.remind&&bk.last!==isoToday()&&!curBook().demo)?'<div class="bkb"><span>لم تحفظ نسخة اليوم</span><button data-act="bkSave">حفظ الآن</button></div>':'';}
 function bkSheet(){
   const bk=S.backup;
   const el=openSheet('<h2>حفظ واستيراد</h2><p class="mut">آخر حفظ: '+(bk.last?esc(dateInfo(bk.last).g):'لم تحفظ بعد')+'</p>'+
-    '<div class="acts"><button class="btn full" id="b1">حفظ نسخة كصورة (تحوي كل بياناتك)</button>'+
-    '<button class="btn sec" id="b2">حفظ ملف</button>'+
-    '<button class="btn sec full" id="b4">استيراد من ملف</button>'+
+    '<div class="acts"><button class="btn full" id="b2">حفظ جميع معلومات دفتر المعلم كملف</button>'+
+    '<button class="btn sec full" id="b4">استيراد جميع المعلومات من ملف</button>'+
     '<button class="btn ghost" id="b5">أسماء بالكتابة</button><button class="btn ghost" id="b6">أسماء من ملف أو صورة</button></div>'+
-    '<p class="mut" style="margin-top:10px">عند إرسال الصورة بالواتساب أرسلها كملف أو مستند حتى لا تُضغط وتفقد البيانات.</p>');
+    '<p class="mut" style="margin-top:10px">عند الحفظ تفتح نافذة تختار منها المجلد الذي تريده.</p>');
   const go=fn=>()=>{el.remove();fn();};
-  $('#b1',el).onclick=go(backupImage);$('#b2',el).onclick=go(exportJson);
+  $('#b2',el).onclick=go(exportJson);
   $('#b4',el).onclick=go(()=>pickFile('.json,application/json',importJson));
   $('#b5',el).onclick=go(()=>namesSheet('','كتابة أو لصق الأسماء'));
   $('#b6',el).onclick=go(()=>pickFile('.txt,.csv,.xlsx,.xls,.pdf,image/*',f=>/^image\//.test(f.type)?importImage(f):importFile(f)));
@@ -2689,9 +2883,10 @@ function renderMore(){
    '<input type="file" id="imf" hidden accept=".txt,.csv,.xlsx,.xls,.pdf,text/plain,text/csv"><input type="file" id="imi" hidden accept="image/*">'+
    '<div class="acts"><button class="btn sec" data-act="imText">كتابة / لصق</button><button class="btn sec" data-act="imFile">ملف</button><button class="btn sec full" data-act="imImg">صورة قائمة (يقرؤها Claude)</button></div></div>'+
    '<div class="card"><h3>الحفظ والاستيراد</h3><p class="mut">'+(DB.status==='db'?'بياناتك محفوظة في حسابك وتظهر على أجهزتك. ومع ذلك احفظ نسخة بين فترة وأخرى.':'البيانات محفوظة على هذا الجهاز فقط. احفظ نسخة بين فترة وأخرى.')+'</p>'+
-   '<div class="acts"><button class="btn" data-act="bkMenu">حفظ / استيراد</button><button class="btn sec" data-act="bkImg">حفظ نسخة كصورة</button></div>'+
+   '<div class="acts"><button class="btn full" data-act="bkSave">حفظ جميع معلومات دفتر المعلم كملف</button><button class="btn sec full" data-act="bkLoad">استيراد جميع المعلومات من ملف</button></div>'+
    '<label class="row" style="margin-top:12px"><input type="checkbox" id="bkRem" '+(S.backup.remind?'checked':'')+' style="width:22px;height:22px"> <b>تذكير يومي بالحفظ</b></label>'+
-   '<label class="f" for="bkTime">وقت التذكير</label><input type="time" id="bkTime" value="'+esc(S.backup.time)+'"></div>';
+   '<label class="f" for="bkTime">وقت التذكير</label><input type="time" id="bkTime" value="'+esc(S.backup.time)+'"></div>'+
+   '<div class="card"><h3>النطق والأصوات (تجريبي)</h3><p class="mut">سجّل صوتك لبداية كل حصة ونهايتها ووقت التحرك، واختر له نمطًا. يُحفظ في جوالك فقط.</p><div class="acts"><button class="btn full" data-act="voiceSheet">تسجيل أصواتي</button></div></div>';
   const bind=(id,fn)=>{const e=$(id);if(e)e.onchange=fn;};
   const hj=d=>{S.settings.hijriAdj=Math.max(-3,Math.min(3,(parseInt(S.settings.hijriAdj)||0)+d));save();$('#hjv').textContent=hijriPrev();};
   $('#hjm').onclick=()=>hj(-1);$('#hjp').onclick=()=>hj(1);
@@ -2704,7 +2899,16 @@ function renderMore(){
   bind('#mx',e=>{const v=Math.max(1,Math.min(100,parseInt(e.target.value)||10));b.max=v;e.target.value=v;save();});
   bind('#imf',e=>{const f=e.target.files[0];e.target.value='';if(f)importFile(f);});
   bind('#imi',e=>{const f=e.target.files[0];e.target.value='';if(f)importImage(f);});
-  
+  {const sv=(d)=>'<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+d+'</svg>';
+   const IC=[sv('<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/>'),
+     sv('<rect x="3" y="5" width="18" height="16" rx="3"/><path d="M8 3v4M16 3v4M3 10h18"/>'),
+     sv('<path d="M9 18V6l10-2v12"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="16.5" cy="16" r="2.5"/>'),
+     sv('<path d="M12 3l9 5-9 5-9-5 9-5z"/><path d="M3 13l9 5 9-5"/>'),
+     sv('<path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3V4z"/><path d="M5 17a3 3 0 0 1 3-3h11"/>'),
+     sv('<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.5 3-5.5 6.5-5.5S15.5 16.5 15.5 20"/><path d="M19 8v6M16 11h6"/>'),
+     sv('<path d="M12 3v12M7 10l5 5 5-5"/><path d="M4 20h16"/>')];
+   const COL=['#0d9488','#2563eb','#7c3aed','#d97706','#16a34a','#db2777','#475569'];
+   document.querySelectorAll('#main > .card').forEach((c,i)=>{const h=c.querySelector('h3');c.classList.add('mcard');c.style.setProperty('--c',COL[i%COL.length]);if(h)h.insertAdjacentHTML('afterbegin','<span class="mic">'+IC[i%IC.length]+'</span>');});}
 }
 /* --- تحليل الأسماء --- */
 const HEADER_WORDS=new Set(['الاسم','اسم الطالب','اسم','الطالب','م','رقم','الصف','الفصل','الجنسية','السجل المدني','رقم الهوية','الهوية','التسلسل','ملاحظات','#','No','Name']);
@@ -2815,10 +3019,20 @@ async function importBookData(src){
 }
 async function exportJson(){
   const data=JSON.stringify(S);
+  if(window.__saveAsFile){
+    const ok=await window.__saveAsFile(data,'دفتر-المعلم-'+isoToday()+'.json','application/json');
+    if(ok){markBackup();toast('اختر من القائمة مكان حفظ الملف');}else toast('لم يُحفظ الملف');
+    return;
+  }
   try{
     const dl=window.claude&&claude.use?await claude.use('downloads'):null;
     if(dl){await dl.save({filename:'دفتر-المتابعة-نسخة-احتياطية.json',data});markBackup();toast('تم الحفظ');return;}
   }catch(e){if(e&&e.code==='declined')return;}
+  try{
+    const blob=new Blob([data],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');
+    a.href=url;a.download='دفتر-المعلم-'+isoToday()+'.json';document.body.appendChild(a);a.click();a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),4000);markBackup();toast('تم تنزيل الملف');return;
+  }catch(e){}
   const el=openSheet('<h2>نسخ النسخة الاحتياطية</h2><textarea id="jt" readonly style="min-height:200px"></textarea><div class="acts"><button class="btn full" id="cp">نسخ</button></div>');
   $('#jt',el).value=data;
   $('#cp',el).onclick=async()=>{try{await navigator.clipboard.writeText(data);markBackup();toast('تم النسخ');}catch(e){$('#jt',el).select();toast('حدد النص وانسخه');}};
@@ -2855,7 +3069,7 @@ function drawSheets(b,f,land,fam){
     x.fillStyle='#333';x.font='500 '+Math.round(22*fs)+'px '+FB;
     x.fillText([S.settings.school,S.settings.teacher].filter(Boolean).join(' — '),R,m+120*fs);
     x.textAlign='left';x.fillStyle='#14262b';x.font='700 '+Math.round(26*fs)+'px '+FB;
-    x.fillText('الأسبوع '+b.hdr.week,m,m+30*fs);
+    x.fillText('الأسبوع '+curWeek(b),m,m+30*fs);
     x.font='600 '+Math.round(22*fs)+'px '+FB;x.fillText(di.day+'  '+di.h,m,m+72*fs);x.fillText(di.g,m,m+110*fs);
     const top=m+hdrH;
     x.fillStyle='#d6eceb';x.fillRect(R-tw,top,tw,thH);
@@ -2935,14 +3149,20 @@ document.addEventListener('click',async e=>{
     case 'prevOpen':prevSheet(b,d.sid+'|'+d.cid,()=>{});break;
     case 'pickDate':datePicker();break;
     case 'bkMenu':bkSheet();break;
+    case 'bkSave':exportJson();break;
+    case 'bkLoad':pickFile('.json,application/json',importJson);break;
+    case 'pinChg':changePin().then(()=>{if(TAB==='more')render();});break;
+    case 'delPick':delPickSheet();break;
     case 'bkImg':backupImage();break;
+    case 'voiceSheet':voiceSheet();break;
+    case 'ringPick':try{Android.pickRingtone(d.k);}catch(e){}break;
     case 'tonePlay':playTone(d.t,'الحصة الثالثة');break;
     case 'toneAdd':pickFile('audio/*',f=>{
       if(f.size>600*1024){toast('الملف كبير. اختر نغمة أقل من ٦٠٠ كيلوبايت');return;}
       const r=new FileReader();r.onload=()=>{const list=customTones();const id='c_'+uid();list.push({id,name:f.name.replace(/\.[^.]+$/,'').slice(0,24),data:r.result});
-        try{localStorage.setItem('tb_tones',JSON.stringify(list));S.alerts.tone=id;save();renderSched();toast('أُضيفت النغمة');}catch(e){toast('تعذر حفظ النغمة، المساحة ممتلئة');}};
+        try{localStorage.setItem('tb_tones',JSON.stringify(list));S.alerts.toneS=id;save();renderSched();toast('أُضيفت النغمة، اخترها لبداية الحصة أو نهايتها');}catch(e){toast('تعذر حفظ النغمة، المساحة ممتلئة');}};
       r.readAsDataURL(f);});break;
-    case 'toneDel':if(await confirmDelete('حذف هذه النغمة؟')){const list=customTones().filter(x=>x.id!==d.t);try{localStorage.setItem('tb_tones',JSON.stringify(list));}catch(e){}if(S.alerts.tone===d.t)S.alerts.tone='bell';save();renderSched();}break;
+    case 'toneDel':if(await confirmDelete('حذف هذه النغمة؟')){const list=customTones().filter(x=>x.id!==d.t);try{localStorage.setItem('tb_tones',JSON.stringify(list));}catch(e){}['tone','toneS','toneE'].forEach(k=>{if(S.alerts[k]===d.t)S.alerts[k]='bell';});save();renderSched();}break;
     case 'dayN':{const sc=S.sched,k=+d.k,cl=n=>Math.max(1,Math.min(12,n));
       const ch=d.d==='كل الأيام'?sc.days.map(x=>[x,cl(dayCount(sc,x)+k)]):[[d.d,cl(dayCount(sc,d.d)+k)]];
       setDayN(ch.filter(x=>x[1]!==dayCount(sc,x[0])));break;}
@@ -2961,9 +3181,9 @@ document.addEventListener('click',async e=>{
     case 'calAdd':{const a=$('#mhs').value,e=$('#mhe').value||a;if(!a){toast('اختر تاريخ بداية الإجازة');break;}S.cal.hol.push({id:uid(),name:$('#mhn').value.trim()||'إجازة',s:a,e:e<a?a:e});S.cal.hol.sort((x,y)=>x.s<y.s?-1:1);save();renderSched();toast('تمت إضافة الإجازة');break;}
     case 'calDel':{const i=+d.i,h=S.cal.hol[i];if(h&&await confirmDelete('حذف هذه الإجازة؟')){S.cal.hol.splice(i,1);save();renderSched();}break;}
     case 'wkSheet':weekSheet();break;
-    case 'wkp':b.hdr.week++;save();render();break;
-    case 'wkm':b.hdr.week=Math.max(1,b.hdr.week-1);save();render();break;
-    case 'cell':cellSheet(d.sid,d.cid,false);break;
+    case 'wkp':wkStep(1);render();break;
+    case 'wkm':wkStep(-1);render();break;
+    case 'cell':markSel(d.sid,d.cid);cellSheet(d.sid,d.cid,false);break;
     case 'markMode':{const b=curBook();if(!b.cols.some(c=>c.kind==='sum')){toast('أضف مجموعًا أولًا من «إضافة مجموع»');break;}MARK=0;MOVEMODE=false;render();toast('اضغط على رقم المهارة');break;}
     case 'mkCol':MARK=+d.i;render();break;
     case 'markDone':MARK=null;render();break;
@@ -3009,7 +3229,7 @@ document.addEventListener('click',async e=>{
     case 'termH':termOpt(+d.t);break;
     case 'perH':perOpt(+d.t,+d.p);break;
     case 'nCol':noorSheet(d.nid);break;
-    case 'nCell':noorCell(d.sid,d.nid);break;
+    case 'nCell':markSel(d.sid,d.nid);noorCell(d.sid,d.nid);break;
     case 'addStudent':addStudent();break;
     case 'sc':if(S.sched.locked)toast('الجدول مثبّت. اضغط «تغيير الجدول» للتعديل');else schedCellSheet(d.d,+d.p);break;
     case 'lock':{const M=['هل تريد حفظ تغييرات الجدول؟','تأكيد الحفظ (٢ من ٣): هل أنت متأكد من حفظ الجدول؟','تأكيد أخير (٣ من ٣): حفظ الجدول الآن؟'];let st=0;
@@ -3019,10 +3239,23 @@ document.addEventListener('click',async e=>{
       $('#lkok',el).onclick=()=>{if(st<2){st++;show();return;}el.remove();S.sched.locked=true;save();renderSched();toast('تم حفظ الجدول');};break;}
     case 'unlock':if(await confirmBox('هل تريد فعلًا تغيير الجدول؟','نعم، تغيير',false)){S.sched.locked=false;save();renderSched();}break;
     case 'sortMenu':{
-      const el=openSheet('<h2>ترتيب الأسماء</h2><button class="btn full" id="srt">ترتيب أبجدي الآن (أ ب ت ث…)</button><label class="f" for="md" style="margin-top:12px">الطالب الجديد يُضاف</label><select id="md"><option value="alpha" '+(b.addAlpha===false?'':'selected')+'>مرتبًا حسب الأبجدية</option><option value="end" '+(b.addAlpha===false?'selected':'')+'>في آخر القائمة (حسب المكتوب)</option></select><p class="mut">لتعديل مكان طالب بعينه اضغط على اسمه ثم ارفعه أو أنزله أو انقله إلى أول القائمة أو آخرها.</p><div class="acts"><button class="btn ghost" id="no">إغلاق</button></div>');
+      const cur=b.sortMode||(b.addAlpha===false?'end':'alpha');
+      const IC={alpha:'<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h9M4 12h6M4 17h3"/><path d="M17 5v14M14 16l3 3 3-3"/></svg>',end:'<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 6h10M5 11h10M5 16h6"/><circle cx="18" cy="17" r="3.5"/><path d="M18 15.5v3M16.5 17h3"/></svg>',orig:'<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12a8 8 0 1 0 3-6.2"/><path d="M4 4v4h4"/><path d="M12 8v4l3 2"/></svg>'};
+      const opt=(k,t,sub)=>'<button class="sopt'+(cur===k?' on':'')+'" data-sm="'+k+'" aria-pressed="'+(cur===k)+'"><span class="sic">'+IC[k]+'</span><span class="stx"><b>'+t+'</b><small>'+sub+'</small></span>'+(cur===k?'<span class="sok">مفعّل ✓</span>':'')+'</button>';
+      const el=openSheet('<h2>ترتيب الأسماء</h2>'+
+        opt('alpha','ترتيب أبجدي (أبجد هوز…)','يرتّب كل الأسماء الآن، والطالب الجديد يدخل في مكانه الأبجدي')+
+        opt('end','إضافة في آخر القائمة','لا يغيّر الترتيب الحالي، والطالب الجديد يُضاف في الآخر')+
+        opt('orig','ترتيب الأصل (كما كُتب من الورقة)','يرجّع الأسماء كما كتبتها أول مرة، والجديد يُضاف في الآخر')+
+        '<p class="mut" style="margin-top:12px">لتعديل مكان طالب بعينه اضغط على اسمه ثم ارفعه أو أنزله.</p><div class="acts"><button class="btn ghost" id="no">إغلاق</button></div>');
       $('#no',el).onclick=()=>el.close();
-      $('#md',el).onchange=()=>{b.addAlpha=$('#md',el).value!=='end';save();toast(b.addAlpha?'الإضافة الجديدة مرتبة أبجديًا':'الإضافة الجديدة في آخر القائمة');};
-      $('#srt',el).onclick=async()=>{if(b.students.length>1&&!(await confirmBox('سيُعاد ترتيب كل الأسماء أبجديًا وتُلغى أي تعديلات يدوية على الأماكن. متابعة؟','نعم، رتّب',false)))return;sortAlpha(b);save();el.remove();render();toast('تم الترتيب الأبجدي');};
+      el.querySelectorAll('[data-sm]').forEach(x=>x.onclick=async()=>{
+        const k=x.dataset.sm;
+        if(k===cur){toast('هذا الخيار مفعّل الآن');return;}
+        if(k==='alpha'){if(b.students.length>1&&!(await confirmBox('سيُعاد ترتيب كل الأسماء أبجديًا. يمكنك الرجوع لترتيب الأصل بعدها. متابعة؟','نعم، رتّب',false)))return;sortAlpha(b);b.addAlpha=true;toast('تم الترتيب الأبجدي');}
+        else if(k==='orig'){if(b.students.length>1&&!(await confirmBox('ستعود الأسماء إلى ترتيبها الأصلي كما كُتبت أول مرة. متابعة؟','نعم، رجّع',false)))return;sortOrig(b);b.addAlpha=false;toast('رجعت الأسماء إلى ترتيب الأصل');}
+        else{b.addAlpha=false;toast('الطالب الجديد يُضاف في الآخر');}
+        b.sortMode=k;save();el.remove();render();
+      });
       break;}
     case 'termMenu':{
       const t=+d.t,o=t<=2?3-t:0;
@@ -3103,7 +3336,7 @@ document.addEventListener('click',async e=>{
 });
 document.addEventListener('change',e=>{
   const b=curBook(),t=e.target;
-  if(t.classList&&t.classList.contains('toneR')){S.alerts.tone=t.value;save();playTone(t.value,'الحصة الثالثة');}
+  if(t.classList&&t.classList.contains('toneR')){S.alerts['tone'+(t.dataset.k||'S')]=t.value;save();playTone(t.value,'الحصة الثالثة');}
   else if(t.id==='bkRem'){S.backup.remind=t.checked;save();}
   else if(t.id==='bkTime'){if(t.value){S.backup.time=t.value;save();}}
   else if(t.id==='alOn'){S.alerts.on=t.checked;save();}
@@ -3126,7 +3359,7 @@ document.addEventListener('change',e=>{
     const day=t.dataset.d,n=parseInt(t.value)||6,sc=S.sched;
     const filled=Object.keys(sc.cells).filter(k=>k.split('|')[0]===day&&+k.split('|')[1]>n);
     (async()=>{
-      if(filled.length&&!(await confirmDelete('تقليل حصص '+day+' إلى '+n+' سيحذف '+filled.length+' خلية من الجدول؟'))){renderSched();return;}
+      if(filled.length&&!(await strongDelete('تقليل حصص '+day+' إلى '+n+' سيحذف '+filled.length+' خلية من الجدول؟'))){renderSched();return;}
       filled.forEach(k=>delete sc.cells[k]);
       sc.dayPeriods=sc.dayPeriods||{};sc.days.forEach(d=>{if(!sc.dayPeriods[d])sc.dayPeriods[d]=sc.periods;});sc.dayPeriods[day]=n;
       sc.periods=Math.max(...sc.days.map(d=>dayCount(sc,d)));
@@ -3156,7 +3389,8 @@ function autoLesson(){
     if(id&&!$('#layer').children.length&&!SUMPICK){S.cur=id;save();TAB='track';render();return true;}}
   if(!k)LASTLES='';return false;
 }
-setInterval(()=>{if(autoLesson())return;const e=$('#live');if(e)e.innerHTML=liveHTML();},15000);
+function nowDotTick(){const t=document.querySelector('table.st');if(!t)return;const l=liveInfo().lesson,np=l&&l.tag==='الآن'?l.p:0,dn=JSDAY[new Date().getDay()];t.querySelectorAll('.nowdot').forEach(x=>x.remove());const li=liveInfo(),bk=li.s==='بداية الفسحة'&&S.sched.days.includes(dn);if(bk){const bc=t.querySelector('td.brkc');if(bc){bc.style.position='relative';const i=document.createElement('i');i.className='nowdot brkdot';bc.appendChild(i);}}if(!np)return;t.querySelectorAll('button.fill[data-act="sc"],button.emp[data-act="sc"]').forEach(b=>{if(+b.dataset.p===np&&b.dataset.d===dn&&!b.querySelector('.nowdot')){const i=document.createElement('i');i.className='nowdot';b.prepend(i);}});}
+setInterval(()=>{nowDotTick();if(autoLesson())return;const e=$('#live');if(e)e.innerHTML=liveHTML();},15000);
 setInterval(alertTick,10000);
 </script>
 </body>
