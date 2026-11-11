@@ -95,6 +95,19 @@
       }
     }
 
+    /* تنبيهات خاصة بصوتي (بداية العام الدراسي ...) */
+    try {
+      (S.voiceEv || []).forEach(function (e) {
+        if (!e || !e.date || !e.time) return;
+        var tp = String(e.time).split(':').map(Number);
+        var atE = msOf(e.date, (tp[0] || 0) * 60 + (tp[1] || 0));
+        if (atE <= now) return;
+        var vt = 'bell';
+        try { if (typeof hasVoice === 'function' && hasVoice('x' + e.id)) vt = 'c_v_x' + e.id; } catch (x) { }
+        out.push({ id: 've|' + e.id, at: atE, title: e.name, body: e.name, meta: { tone: vt, say: e.name } });
+      });
+    } catch (e) { }
+
     if (!a.on || !sc) return out;
     var mk = function (k, say, vk) {
       var t = 'bell';
