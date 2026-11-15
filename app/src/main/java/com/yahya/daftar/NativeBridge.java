@@ -424,4 +424,35 @@ public class NativeBridge {
             return "err:" + e;
         }
     }
+
+    // ---------- قراءة النص من صورة (Tesseract) بدون إنترنت، تعمل في الخلفية ويُستعلم عن النتيجة ----------
+    private final java.util.concurrent.ConcurrentHashMap<String, String> ocrRes = new java.util.concurrent.ConcurrentHashMap<>();
+
+    @JavascriptInterface
+    public boolean hasOcr() {
+        return true;
+    }
+
+    @JavascriptInterface
+    public void ocrStart(final String id, final String b64, final String lang) {
+        new Thread(() -> {
+            try {
+                byte[] d = Base64.decode(b64, Base64.DEFAULT);
+                android.graphics.Bitmap bm = android.graphics.BitmapFactory.decodeByteArray(d, 0, d.length);
+                if (bm == null) throw new Exception("صورة غير صالحة");
+                String t = Ocr.read(app, bm, lang);
+                ocrRes.put(id, "OK:" + t);
+            } catch (Throwable e) {
+                String m = e.getMessage();
+                ocrRes.put(id, "ERR:" + (m == null ? "تعذّرت القراءة" : m));
+            }
+        }).start();
+    }
+
+    /** "" = لم تنتهِ بعد، وإلا "OK:النص" أو "ERR:السبب" (وتُحذف النتيجة بعد قراءتها) */
+    @JavascriptInterface
+    public String ocrPoll(String id) {
+        String r = ocrRes.remove(id);
+        return r == null ? "" : r;
+    }
 }
