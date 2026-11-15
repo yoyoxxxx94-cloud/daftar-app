@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.Gravity;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -27,6 +28,7 @@ public class AlarmActivity extends Activity {
     private TextView titleView;
     private TextView bodyView;
     private boolean receiverRegistered = false;
+    private float downX, downY;
 
     private final BroadcastReceiver stopped = new BroadcastReceiver() {
         @Override
@@ -149,7 +151,34 @@ public class AlarmActivity extends Activity {
         });
         root.addView(open);
 
+        TextView hint = new TextView(this);
+        hint.setText("للإيقاف: اسحب يمينًا أو يسارًا، أو اقلب الجوال على وجهه");
+        hint.setTextColor(Color.parseColor("#c7d2fe"));
+        hint.setTextSize(15);
+        hint.setGravity(Gravity.CENTER);
+        LinearLayout.LayoutParams hp = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        hp.topMargin = dp(22);
+        hint.setLayoutParams(hp);
+        root.addView(hint);
+
         setContentView(root);
+    }
+
+    /** السحب يمينًا أو يسارًا في أي مكان من الشاشة يوقف التنبيه */
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        if (ev.getAction() == MotionEvent.ACTION_DOWN) {
+            downX = ev.getX();
+            downY = ev.getY();
+        } else if (ev.getAction() == MotionEvent.ACTION_UP) {
+            float dx = ev.getX() - downX, dy = ev.getY() - downY;
+            if (Math.abs(dx) > dp(110) && Math.abs(dx) > Math.abs(dy) * 1.5f) {
+                stopService(false);
+                return true;
+            }
+        }
+        return super.dispatchTouchEvent(ev);
     }
 
     private void stopService(boolean openApp) {

@@ -328,4 +328,100 @@ public class NativeBridge {
             return false;
         }
     }
+
+    // ---------- ملفات كبيرة على دفعات (كتب PDF والنسخة الكاملة) ----------
+    private OutputStream chunkOut;
+    private File chunkFile;
+    private String chunkName;
+
+    @JavascriptInterface
+    public synchronized boolean chunkBegin(String name) {
+        try {
+            if (chunkOut != null) {
+                try {
+                    chunkOut.close();
+                } catch (Exception ignored) {
+                }
+            }
+            File dir = new File(app.getCacheDir(), "shared");
+            dir.mkdirs();
+            chunkName = safeName(name);
+            chunkFile = new File(dir, chunkName);
+            chunkOut = new FileOutputStream(chunkFile);
+            return true;
+        } catch (Exception e) {
+            chunkOut = null;
+            return false;
+        }
+    }
+
+    @JavascriptInterface
+    public synchronized boolean chunkAdd(String b64) {
+        try {
+            chunkOut.write(Base64.decode(b64, Base64.DEFAULT));
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    private static void copyFile(File src, OutputStream os) throws java.io.IOException {
+        java.io.FileInputStream in = new java.io.FileInputStream(src);
+        byte[] buf = new byte[65536];
+        int n;
+        while ((n = in.read(buf)) > 0) os.write(buf, 0, n);
+        in.close();
+    }
+
+    /** mode: "share" أو "save". يعيد "ok" أو "err:سبب". */
+    @JavascriptInterface
+    public synchronized String chunkEnd(String mode, String mime) {
+        try {
+            chunkOut.close();
+            chunkOut = null;
+            if (mime == null || mime.isEmpty()) mime = "application/octet-stream";
+            if ("save".equals(mode)) {
+                if (Build.VERSION.SDK_INT >= 29) {
+                    ContentResolver r = app.getContentResolver();
+                    ContentValues v = new ContentValues();
+                    v.put(MediaStore.MediaColumns.DISPLAY_NAME, chunkName);
+                    v.put(MediaStore.MediaColumns.MIME_TYPE, mime);
+                    v.put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS);
+                    Uri u = r.insert(MediaStore.Downloads.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY), v);
+                    if (u == null) return "err:insert";
+                    OutputStream os = r.openOutputStream(u);
+                    if (os == null) return "err:open";
+                    copyFile(chunkFile, os);
+                    os.close();
+                } else {
+                    File dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+                    dir.mkdirs();
+                    File f = new File(dir, chunkName);
+                    OutputStream os = new FileOutputStream(f);
+                    copyFile(chunkFile, os);
+                    os.close();
+                    MediaScannerConnection.scanFile(app, new String[]{f.getPath()}, null, null);
+                }
+                chunkFile.delete();
+                return "ok";
+            }
+            final Uri uri = FileProvider.getUriForFile(app, app.getPackageName() + ".fileprovider", chunkFile);
+            final String type = mime;
+            act.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Intent s = new Intent(Intent.ACTION_SEND);
+                    s.setType(type);
+                    s.putExtra(Intent.EXTRA_STREAM, uri);
+                    s.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    Intent ch = Intent.createChooser(s, "مشاركة");
+                    ch.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    act.startActivity(ch);
+                }
+            });
+            return "ok";
+        } catch (Exception e) {
+            return "err:" + e;
+        }
+    }
 }

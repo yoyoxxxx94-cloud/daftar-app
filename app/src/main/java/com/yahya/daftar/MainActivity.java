@@ -140,6 +140,13 @@ public class MainActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
+        /* فتح الدفتر يوقف التنبيه إن كان يرنّ */
+        if (AlarmService.ringing) {
+            try {
+                startService(new Intent(this, AlarmService.class).setAction(AlarmService.ACTION_STOP));
+            } catch (Exception ignored) {
+            }
+        }
         // أعد مزامنة تنبيهات الأسابيع القادمة كلما فُتح التطبيق
         web.evaluateJavascript("try{window.nativeSyncNow&&nativeSyncNow()}catch(e){}", null);
     }

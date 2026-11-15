@@ -9,6 +9,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ServiceInfo;
 import android.content.res.AssetFileDescriptor;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.media.AudioAttributes;
 import android.media.MediaPlayer;
 import android.media.Ringtone;
@@ -20,6 +24,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.PowerManager;
+import android.os.SystemClock;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.speech.tts.TextToSpeech;
@@ -41,6 +46,55 @@ public class AlarmService extends Service {
     static final String CHANNEL_FB = "daftar_alarm_fallback";
     static final int NOTIF_ID = 4242;
     static final long MAX_MS = 90_000L; // دقيقة ونصف
+
+    /** هل التنبيه يرنّ الآن؟ (تستعملها الشاشات الأخرى لإيقافه عند فتح التطبيق) */
+    static volatile boolean ringing = false;
+
+    /** قلب الجوال على وجهه يوقف التنبيه */
+    private SensorManager sm;
+    private boolean sawUp = false;
+    private long downSince = 0L;
+    private final SensorEventListener flip = new SensorEventListener() {
+        @Override
+        public void onSensorChanged(SensorEvent e) {
+            float x = e.values[0], y = e.values[1], z = e.values[2];
+            if (z > -3f) {
+                sawUp = true;
+                downSince = 0L;
+                return;
+            }
+            if (z < -7.5f && Math.abs(x) < 4f && Math.abs(y) < 4f) {
+                if (!sawUp) return;   // لا يُحسب إلا بعد أن يكون الجوال قد رُفع ثم قُلب
+                long now = SystemClock.elapsedRealtime();
+                if (downSince == 0L) downSince = now;
+                else if (now - downSince >= 500L) stopAlarm();
+            } else {
+                downSince = 0L;
+            }
+        }
+
+        @Override
+        public void onAccuracyChanged(Sensor sensor, int accuracy) {
+        }
+    };
+
+    private void startFlip() {
+        try {
+            sm = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+            Sensor acc = sm == null ? null : sm.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+            sawUp = false;
+            downSince = 0L;
+            if (acc != null) sm.registerListener(flip, acc, SensorManager.SENSOR_DELAY_UI);
+        } catch (Exception ignored) {
+        }
+    }
+
+    private void stopFlip() {
+        try {
+            if (sm != null) sm.unregisterListener(flip);
+        } catch (Exception ignored) {
+        }
+    }
 
     private MediaPlayer player;
     private Ringtone ringtone;
@@ -103,6 +157,8 @@ public class AlarmService extends Service {
         acquireWakeLock();
         startSound(tone, say);
         startVibration();
+        ringing = true;
+        startFlip();
 
         handler.removeCallbacks(autoStop);
         handler.postDelayed(autoStop, MAX_MS);
@@ -320,6 +376,8 @@ public class AlarmService extends Service {
     }
 
     private void stopAlarm() {
+        ringing = false;
+        stopFlip();
         handler.removeCallbacks(autoStop);
         releasePlayers();
         try {
@@ -337,6 +395,8 @@ public class AlarmService extends Service {
 
     @Override
     public void onDestroy() {
+        ringing = false;
+        stopFlip();
         handler.removeCallbacks(autoStop);
         releasePlayers();
         try {
@@ -396,6 +456,7 @@ public class AlarmService extends Service {
                 .setPriority(Notification.PRIORITY_MAX)
                 .setOngoing(!fallback)
                 .setAutoCancel(fallback)
+                .setDeleteIntent(stop)
                 .setContentIntent(full)
                 .setFullScreenIntent(full, true)
                 .addAction(R.drawable.ic_stat_alarm, "إيقاف", stop);
